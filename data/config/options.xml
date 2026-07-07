@@ -1,0 +1,17 @@
+<menu name="Myths of Tubbyland" desc="Options specific to Myths of Tubbyland">
+    <checkbox id="botplayBox" name="Botplay" desc="Enabled/Disables Botplay. For showcases only."/>
+    <checkbox id="devmodeBox" name="Developer Editing" desc="Enables/Disables 7 in the main menu to be used to open the editor"/>
+
+    <menu name="Graphics Options" desc="Options pertaining to graphical elements, such as borders">
+        <choice id="borderToggle" name="Borders" desc="''DISABLED'' = Game plays at normal Aspect Ratio and has no special effects. Best if you want no distractions or if you don't like the effects. ''4:3'' = Forces the game into 4:3 Aspect Ratio. Best if you want the look without the extra effects. ''OVERLAY'' = Forces the game into 4:3 Aspect Ratio and adds a fancy border. Best if you want the full experience.">
+        <value name="Disabled" value="off"/>
+        <value name="Only 4:3" value="partial"/>
+        <value name="Overlay" value="on"/>
+        </choice>
+        <checkbox id="forcefullscreen" name="Force Fullscreen" desc="Forces the game into Fullscreen after every transition. RECOMMENDED" />
+    </menu>
+
+    <menu name="Memes" desc="WARNING: these will make the mod lose a lot of aura">
+        <checkbox id="tinkymeme" name="Shake it, Don't Stir" desc="Big Winky Nocturnals on your Protocol"/>
+    </menu>
+</menu>

@@ -1,0 +1,4 @@
+<!DOCTYPE codename-engine-character>
+<character x="-1050" y="100" scale="2" flipX="true" camx="300" isPlayer="true" icon="mraurafarmer" color="#A1A1A1">
+	<anim name="run" anim="run"/>
+</character>

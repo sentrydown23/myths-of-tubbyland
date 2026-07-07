@@ -1,0 +1,4 @@
+<!DOCTYPE codename-engine-character>
+<character x="-700" y="150" scale="2" antialiasing="false" camx="100" isPlayer="true" icon="guardianwalk">
+	<anim name="idle" anim="idle" loop="true"/>
+</character>

@@ -1,0 +1,4 @@
+<!DOCTYPE codename-engine-character>
+<character x="-500" y="-250" camx="-2420">
+	<anim name="turn" anim="turn"/>
+</character>

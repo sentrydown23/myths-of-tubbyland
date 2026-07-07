@@ -1,0 +1,4 @@
+<!DOCTYPE codename-engine-character>
+<character x="-800" scale="2" flipX="true" camx="-100" camy="-100" isPlayer="true">
+	<anim name="idle" anim="idle"/>
+</character>

@@ -1,0 +1,20 @@
+<!DOCTYPE codename-engine-stage>
+<stage folder="stages/forest/" name="Main-Land">
+	<sprite sprite="forest" type="none" scale="1.5" skewx="0.08" name="forest"/>
+	<sprite type="none" scale="1.5" sprite="forest2" name="forest2"/>
+	<sprite type="none" scale="1.5" sprite="forest3" name="forest3"/>
+	<sprite type="none" scale="1.5" sprite="forest4" name="forest4"/>
+	<sprite type="none" scale="1.5" sprite="forest5" name="forest5"/>
+	<girlfriend/>
+	<dad scalex="1.00000000000007" x="100.000000000015"/>
+	<boyfriend/>
+	<sprite x="272" sprite="dropimages/image1" y="248" type="none" alpha="0.6" scalex="3.21" scaley="4.29" name="drop1"/>
+	<sprite x="272" sprite="dropimages/image2" y="248" type="none" alpha="0.6" scalex="3.21" scaley="4.29" name="drop2"/>
+	<sprite x="272" sprite="dropimages/image3" y="248" type="none" alpha="0.6" scalex="3.21" scaley="4.29" name="drop3"/>
+	<sprite x="272" sprite="dropimages/image4" y="248" type="none" alpha="0.6" scalex="3.21" scaley="4.29" name="drop4"/>
+	<sprite x="272" sprite="dropimages/image5" y="248" type="none" alpha="0.6" scalex="3.21" scaley="4.29" name="drop5"/>
+	<sprite x="471" sprite="popups/tinky" y="242" type="none" scale="2" name="tinky"/>
+	<sprite x="471" sprite="popups/dipsy" y="242" type="none" scale="2" name="dipsy"/>
+	<sprite x="471" sprite="popups/lala" y="242" type="none" scale="2" name="lala"/>
+	<sprite x="471" sprite="popups/po" y="242" type="none" scale="2" name="po"/>
+</stage>

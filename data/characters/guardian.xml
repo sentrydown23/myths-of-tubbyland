@@ -1,0 +1,10 @@
+<!DOCTYPE codename-engine-character>
+<character x="-1050" y="100" scale="2" flipX="true" camx="300" isPlayer="true" icon="mraurafarmer" color="#A1A1A1">
+	<anim name="idle" anim="idle"/>
+	<anim name="singDOWN" anim="down"/>
+	<anim name="singRIGHT" anim="right"/>
+	<anim name="singLEFT" anim="left"/>
+	<anim name="singUP" anim="up"/>
+	<anim name="up0" anim="up0"/>
+	<anim name="run" anim="run"/>
+</character>
