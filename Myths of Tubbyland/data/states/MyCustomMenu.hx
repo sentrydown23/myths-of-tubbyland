@@ -15,6 +15,7 @@ var letterGroups:Array<FlxTypedGroup<FlxText>> = [];
 var hitBoxes:Array<FlxSprite> = [];
 var titleGroup:FlxTypedGroup<FlxText> = new FlxTypedGroup<FlxText>();
 var menuItems:Array<String> = ["Select Chapter", "Options", "Credits", "Exit"];
+var curSelected:Int = 0; // Added selection tracker
 var flickerTimer:Float = 0;
 var titleFlickerTimer:Float = 0;
 var canFlicker:Bool = false;
@@ -28,7 +29,6 @@ var bgTimer:Float = 0;
 function create() {
     FlxG.mouse.visible = true;
     
-    // Smooth audio transition
     if (FlxG.sound.music.volume < 0.7) {
         FlxG.sound.music.fadeIn(1.0, FlxG.sound.music.volume, 0.7);
     } else if (FlxG.sound.music.volume > 0.7) {
@@ -76,56 +76,50 @@ function create() {
 }
 
 function update(elapsed:Float) {
-    if(FlxG.keys.justPressed.TAB) {
-        openSubState(new ModSwitchMenu());
-        persistentUpdate = !(persistentDraw = true);
+    // Shortcuts
+    if(FlxG.keys.justPressed.TAB) openSubState(new ModSwitchMenu());
+    if(FlxG.keys.justPressed.SEVEN && FlxG.save.data.devmodeBox) openSubState(new EditorPicker());
+
+    // Navigation
+    if (!isSelecting) {
+        if (FlxG.keys.justPressed.UP) changeSelection(-1);
+        if (FlxG.keys.justPressed.DOWN) changeSelection(1);
+        if (FlxG.keys.justPressed.ENTER) flashAndSelect(curSelected);
     }
 
-    if(FlxG.keys.justPressed.SEVEN && FlxG.save.data.devmodeBox == true) {
-        openSubState(new EditorPicker());
-        persistentUpdate = !(persistentDraw = true);
+    // Mouse hover detection (updates curSelected based on hovering)
+    for (i in 0...hitBoxes.length) {
+        if (FlxG.mouse.overlaps(hitBoxes[i]) && curSelected != i && !isSelecting) {
+            changeSelection(i - curSelected);
+        }
+        if (FlxG.mouse.overlaps(hitBoxes[i]) && FlxG.mouse.justPressed && !isSelecting) {
+            flashAndSelect(i);
+        }
     }
 
-    // Parallax background effect
+    // Parallax & Effects
     bgTimer += elapsed;
     bg.x = -20 + (Math.sin(bgTimer * 0.2) * 7);
     bg.y = -20 + (Math.cos(bgTimer * 0.15) * 8);
 
     if (canFlicker && !isSelecting) {
         flickerTimer += elapsed;
-        if (flickerTimer >= 2.5) {
-            if (FlxG.random.bool(60)) triggerNeonBurst();
-            flickerTimer = 0;
-        }
+        if (flickerTimer >= 2.5) { if (FlxG.random.bool(60)) triggerNeonBurst(); flickerTimer = 0; }
         titleFlickerTimer += elapsed;
-        if (titleFlickerTimer >= 5.0) {
-            if (FlxG.random.bool(30)) triggerTitleFlicker();
-            titleFlickerTimer = 0;
-        }
+        if (titleFlickerTimer >= 5.0) { if (FlxG.random.bool(30)) triggerTitleFlicker(); titleFlickerTimer = 0; }
     }
+}
 
-    for (i in 0...hitBoxes.length) {
-        var box = hitBoxes[i];
-        var group = letterGroups[i];
-        
-        if (FlxG.mouse.overlaps(box) && !isSelecting) {
-            group.forEach(function(l) { 
-                if (l.scale.x < 1.1) {
-                    FlxTween.cancelTweensOf(l.scale);
-                    FlxTween.tween(l.scale, {x: 1.1, y: 1.1}, 0.2, {ease: FlxEase.expoOut});
-                }
-                l.color = 0xFFFF4444; 
-            });
-            if (FlxG.mouse.justPressed) flashAndSelect(i);
-        } else if (!isSelecting) {
-            group.forEach(function(l) { 
-                if (l.scale.x > 1.0) {
-                    FlxTween.cancelTweensOf(l.scale);
-                    FlxTween.tween(l.scale, {x: 1.0, y: 1.0}, 0.2, {ease: FlxEase.expoOut});
-                }
-                l.color = 0xFFFFFFFF; 
-            });
-        }
+function changeSelection(change:Int) {
+    curSelected = FlxMath.wrap(curSelected + change, 0, menuItems.length - 1);
+    
+    for (i in 0...letterGroups.length) {
+        var isSelected = (i == curSelected);
+        letterGroups[i].forEach(function(l) {
+            FlxTween.cancelTweensOf(l.scale);
+            FlxTween.tween(l.scale, {x: isSelected ? 1.1 : 1.0, y: isSelected ? 1.1 : 1.0}, 0.2, {ease: FlxEase.expoOut});
+            l.color = isSelected ? 0xFFFF4444 : 0xFFFFFFFF;
+        });
     }
 }
 
@@ -135,17 +129,13 @@ function flashAndSelect(index:Int) {
     FlxG.sound.play(Paths.sound("menuSelection"), 2.0);
 
     var group = letterGroups[index];
-    
-    // Rapid opacity flash effect
     for (i in 0...6) {
         new FlxTimer().start(0.1 * i, function(tmr) {
             group.forEach(function(l) { l.alpha = (i % 2 == 0) ? 0 : 1; });
         });
     }
     
-    new FlxTimer().start(0.7, function(tmr) {
-        handleSelection(menuItems[index]);
-    });
+    new FlxTimer().start(0.7, function(tmr) { handleSelection(menuItems[index]); });
 }
 
 function triggerNeonBurst() {

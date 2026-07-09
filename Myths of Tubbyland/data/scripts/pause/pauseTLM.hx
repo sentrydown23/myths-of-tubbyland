@@ -1,8 +1,7 @@
 import funkin.options.OptionsMenu;
+import funkin.backend.scripting.ModState;
 
-var menuItems:FlxTypedGroup<FlxText>;
 var letterGroups:Array<FlxTypedGroup<FlxText>> = [];
-var hitBoxes:Array<FlxSprite> = [];
 var options:Array<String> = ["Resume", "Restart", "Options", "Exit"];
 var curSelected:Int = 0;
 var bg:FlxSprite;
@@ -30,7 +29,7 @@ function create(event) {
     title.cameras = [pauseCam];
     add(title);
 
-    // Initialize the disc sprite off-screen
+    // Initialize the disc sprite
     disc = new FlxSprite(FlxG.width + 900, FlxG.height / 2).loadGraphic(Paths.image("freeplay/vinyl_the-lions-mouth"));
     disc.setGraphicSize(300, 300);
     disc.updateHitbox();
@@ -39,10 +38,6 @@ function create(event) {
     add(disc);
 
     // Setup the menu items group
-    menuItems = new FlxTypedGroup();
-    menuItems.cameras = [pauseCam];
-    add(menuItems);
-
     for (i in 0...options.length) {
         var group = new FlxTypedGroup<FlxText>();
         letterGroups.push(group);
@@ -53,21 +48,13 @@ function create(event) {
         var yPos = (FlxG.height / 2) - 100 + (i * 80);
         var label = options[i];
 
-        // Create individual letter sprites for the menu options
+        // Create individual letter sprites
         for (j in 0...label.length) {
-            var letter = new FlxText(xPos, yPos, 0, label.charAt(j), 48);
+            var letter = new FlxText(xPos + (j * 25), yPos, 0, label.charAt(j), 48);
             letter.setFormat(Paths.font("LD Slender Regular.ttf"), 48, FlxColor.WHITE, "left");
-            letter.x += (j * 25);
             letter.alpha = 0;
             group.add(letter);
         }
-
-        // Add invisible hitboxes for mouse interaction
-        var hitBox = new FlxSprite(xPos - 150, yPos + 50).makeGraphic(300, 60, FlxColor.TRANSPARENT);
-        hitBox.ID = i;
-        hitBox.cameras = [pauseCam];
-        hitBoxes.push(hitBox);
-        add(hitBox);
     }
 
     // Trigger opening animations
@@ -76,8 +63,7 @@ function create(event) {
 
     // Staggered animation for menu buttons
     for (i in 0...letterGroups.length) {
-        var group = letterGroups[i];
-        group.forEach(function(l) {
+        letterGroups[i].forEach(function(l) {
             FlxTween.tween(l, {alpha: 1}, 0.5, {
                 startDelay: 0.3 + (i * 0.15),
                 ease: FlxEase.expoOut
@@ -89,25 +75,17 @@ function create(event) {
             });
         });
     }
+    
+    // Initial selection visual
+    changeSelection(0);
 }
 
 function update(elapsed) {
-    // Handle disc rotation
     disc.angle += elapsed * 45;
 
-    // Keyboard navigation
+    // Keyboard navigation only
     if (FlxG.keys.justPressed.UP) changeSelection(-1);
     if (FlxG.keys.justPressed.DOWN) changeSelection(1);
-
-    // Mouse hover and click detection
-    for (i in 0...hitBoxes.length) {
-        var box = hitBoxes[i];
-        if (FlxG.mouse.overlaps(box)) {
-            if (curSelected != i) changeSelection(i - curSelected);
-            if (FlxG.mouse.justPressed) selectOption();
-        }
-    }
-
     if (FlxG.keys.justPressed.ENTER) selectOption();
 
     // Trigger random letter flicker effect
@@ -121,7 +99,6 @@ function update(elapsed) {
 }
 
 function selectOption() {
-    // Handle menu button selection
     switch(options[curSelected]) {
         case "Resume": close();
         case "Restart": FlxG.switchState(new PlayState());
@@ -131,7 +108,6 @@ function selectOption() {
 }
 
 function changeSelection(change:Int) {
-    // Update active selection and apply visual feedback
     curSelected = FlxMath.wrap(curSelected + change, 0, options.length - 1);
 
     for (i in 0...letterGroups.length) {
@@ -148,7 +124,6 @@ function changeSelection(change:Int) {
 }
 
 function flickerLetter(l:FlxText, count:Int) {
-    // Perform a recursive flickering animation on a text character
     if (l == null) return;
     FlxTween.cancelTweensOf(l);
     l.alpha = (l.alpha >= 0.5) ? 0.1 : 1.0;
