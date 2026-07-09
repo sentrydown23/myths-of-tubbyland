@@ -50,6 +50,7 @@ function beatHit(_)
             iconP2.alpha = 1;
         
         case 136:
+            FlxTween.cancelTweensOf(camHUD);
             FlxTween.tween(camHUD, {alpha: 1}, 0.2);
 
         case 264:

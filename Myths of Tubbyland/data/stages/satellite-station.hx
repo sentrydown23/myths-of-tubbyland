@@ -19,6 +19,7 @@ function postCreate() {
     bgParts.push(bgbridge);
     bgParts.push(bgbridge2);
     bgParts.push(green);
+    bgParts.push(bg2);
 
     for (spr in bgParts) {
         spr.alpha = 0;
@@ -29,6 +30,8 @@ function postCreate() {
 
     bgParts[1].y -= 200;
     bgParts[1].x -= 200;
+    bgParts[5].y -= 300;
+    bgParts[5].x -= 200;
 
     bgParts[2].y -= 200;
     bgParts[2].x -= 200;
@@ -64,15 +67,38 @@ function postCreate() {
     add(upsGroup);
 
     var upsNames:Array<String> = ["p1", "p2", "p3", "p4", "p5", "p6"];
+if (FlxG.save.data.borderToggle != "off") {
     for (name in upsNames) {
         var spr = new FlxSprite(0, 0);
         spr.loadGraphic(Paths.image('stages/satstat/ups/' + name));
         spr.alpha = 0;
+        
+        // Keeps original positioning math exactly as it was
         spr.x = (FlxG.width - 800) - 190;
         spr.y = (FlxG.height - 600) - 110;
+        
         upsGroup.add(spr);
         upsSprites.push(spr);
     }
+}
+else {
+    for (name in upsNames) {
+        var spr = new FlxSprite(0, 0);
+        spr.loadGraphic(Paths.image('stages/satstat/ups/' + name));
+        spr.alpha = 0;
+        
+        // Scales the 800x600 sprite to perfectly fit the fullscreen monitor
+        spr.setGraphicSize(FlxG.width, FlxG.height);
+        spr.updateHitbox();
+        
+        // Since it is fullscreen, reset coordinates so it anchors cleanly at the top-left
+        spr.x = 0;
+        spr.y = 0;
+        
+        upsGroup.add(spr);
+        upsSprites.push(spr);
+    }
+}
 
     var greenIdx = members.indexOf(bgParts[4]);
     if (greenIdx != -1) {
@@ -147,11 +173,11 @@ function beatHit(_) {
             bgParts[3].alpha = 1;
 
         case 328:
-            bgParts[1].alpha = 1;
+            bgParts[5].alpha = 1;
             bgParts[3].alpha = 0;
 
         case 360:
-            bgParts[1].alpha = 0;
+            bgParts[5].alpha = 0;
             bgParts[2].alpha = 0;
             bgLake.alpha = 1;
 

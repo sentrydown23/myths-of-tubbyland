@@ -4,9 +4,10 @@ import flixel.tweens.FlxTween;
 import funkin.game.PlayState;
 
 var custardCounter:FlxText;
-var deathChanceText:FlxText; // New text object
+var deathChanceText:FlxText;
 var custardsCollected:Int = 0;
 var deathChance:Float = 1.0; 
+var permanentDeathChance:Float = 0.0;
 
 var fadeTimer:FlxTimer = new FlxTimer();
 var gameoverCustard:String = "data/scripts/gameovers/gameoverNPnoCustard";
@@ -44,20 +45,27 @@ function setupText(txt:FlxText) {
 
 function onNoteHit(e) {
     if(e.noteType == "custard") {
+        if(FlxG.save.data.specialHitSounds == true) 
+        FlxG.sound.play(Paths.sound("custardhit"), 5.0);
         custardsCollected += 1;
+        
         deathChance -= 0.1;
         if (deathChance < 0) deathChance = 0;
         
-        // Update both texts
+        custardCounter.color = 0xFFFFFFFF;
+        deathChanceText.color = 0xFFFFFFFF;
         custardCounter.text = "Custards Collected: " + custardsCollected + "/10";
-        // Convert deathChance (e.g., 0.9) to percent (e.g., 90)
-        deathChanceText.text = "Chances of death: " + Math.round(deathChance * 100) + "%";
         
-        // Show both
+        // Show current chance. Only show (+X) if penalty exists
+        var displayPercent = Math.round(deathChance * 100);
+        var penaltyPercent = Math.round(permanentDeathChance * 100);
+        
+        deathChanceText.text = "Chances of death: " + displayPercent + "%" + 
+                               (permanentDeathChance > 0 ? " (+" + penaltyPercent + ")" : "");
+        
         custardCounter.alpha = 1;
         deathChanceText.alpha = 1;
         
-        // Reset timer
         fadeTimer.cancel(); 
         fadeTimer.start(3.0, function(tmr) {
             FlxTween.tween(custardCounter, {alpha: 0}, 1.0);
@@ -69,22 +77,48 @@ function onNoteHit(e) {
 function onPlayerMiss(e) {
     if(e.noteType == "custard") {
         e.cancel(true);
+        if(FlxG.save.data.specialHitSounds == true) 
+        FlxG.sound.play(Paths.sound("custardmiss"), 7.0);
         FlxG.camera.flash(0xFFFF0000, 0.3);
         e.note.kill();
         e.note.destroy();
+
+        permanentDeathChance += 0.1;
+        deathChance -= 0.1;
+        
+        // Visual feedback
+        custardCounter.alpha = 1;
+        deathChanceText.alpha = 1;
+        custardCounter.color = 0xFFFF0000;
+        deathChanceText.color = 0xFFFF0000;
+
+        // Display current total chance + the penalty
+        var displayPercent = Math.round(deathChance * 100);
+        var penaltyPercent = Math.round(permanentDeathChance * 100);
+        deathChanceText.text = "Chances of death: " + displayPercent + "% (+" + penaltyPercent + ")";
+
+        fadeTimer.cancel();
+        fadeTimer.start(1.0, function(tmr) {
+            FlxTween.color(custardCounter, 0.5, 0xFFFF0000, 0xFFFFFFFF);
+            FlxTween.color(deathChanceText, 0.5, 0xFFFF0000, 0xFFFFFFFF);
+            FlxTween.tween(custardCounter, {alpha: 0}, 1.0);
+            FlxTween.tween(deathChanceText, {alpha: 0}, 1.0);
+        });
     }
 }
 
 function beatHit(curBeat:Int) {
     if (curBeat == 312) {
-        // Roll the dice based on the current accumulated deathChance
         var roll = FlxG.random.float(0, 1);
+        // Use the total combined chance
+        var totalRisk = deathChance + permanentDeathChance;
         
-        trace("Current Death Chance: " + (deathChance * 100) + "% | Roll: " + (roll * 100) + "%");
-        
-        if (roll < deathChance) {
-            trace("Death event triggered!");
-            GameOverSubstate.script = gameoverCustard;
+        if (roll < totalRisk) {
+            if (custardsCollected == 0) {
+                GameOverSubstate.script = 'data/spoilers/1';
+            } else {
+                GameOverSubstate.script = gameoverCustard;
+            }
             health = 0;
         }
     }

@@ -1,18 +1,17 @@
 import funkin.game.PlayState;
 
-var toggleSound:Bool = true;
-var damageAmount:Float = 0.1; 
-var missDamageAmount:Float = 0.3; 
-var minimumDamage:Float = 1; // maximum health is 2, so 1 would be 50%
+var damageAmount:Float = 0.2; // do 10% on hit
+var missDamageAmount:Float = 0.4; // do 20% on miss 
+var minimumDamage:Float = 1.2; // maximum health is 2, so 1.5 would be 60%
+var soundVolume:Float = 4.0; // default volume 
 
 function onPlayerHit(e)
 {
     if(e.noteType == "sawnote")
     {
-        if(toggleSound == true) 
-        {
-        FlxG.sound.play(Paths.sound("sawhit"), 1.5);
-        }
+        if(FlxG.save.data.specialHitSounds == true) 
+        FlxG.sound.play(Paths.sound("sawhit"), soundVolume);
+
 
         var potentialHealth = health - damageAmount; // potentialHealth is current players health - damageAmount
 
@@ -27,7 +26,8 @@ function onPlayerMiss(e)
 {
     if(e.noteType == "sawnote")
     {
-        FlxG.sound.play(Paths.sound("sawmiss"), 2.0);
+        if(FlxG.save.data.specialHitSounds == true) 
+        FlxG.sound.play(Paths.sound("sawmiss"), 3.0);
         e.cancel(true);
         e.note.strumLine.deleteNote(e.note);
         
@@ -53,23 +53,15 @@ function beatHit(_)
     switch(_) 
     {
         case 199:
-        toggleSound = false;
+        soundVolume = 1.0;
 
         case 263:
-        toggleSound = true;
+        soundVolume = 4.0;
 
         case 391:
-        toggleSound = false;
+        soundVolume = 1.0;
 
         case 463:
-        toggleSound = true;
+        soundVolume = 4.0;
     }
-}
-
-function soundON() {
-    toggleSound = true;
-}
-
-function soundOFF() {
-    toggleSound = false;
 }

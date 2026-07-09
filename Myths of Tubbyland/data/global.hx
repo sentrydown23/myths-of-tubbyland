@@ -7,6 +7,7 @@ var botplayValue:Bool = FlxG.save.data.botplayBox;
 var devmodeValue:Bool = FlxG.save.data.devmodeBox;
 var tinkymemeValue:Bool = FlxG.save.data.tinkymeme;
 var forcefullscreenValue:Bool = FlxG.save.data.forcefullscreen;
+var specialHitSoundsValue:Bool = FlxG.save.data.specialHitSounds;
 var bordertoggleValue:String = FlxG.save.data.borderToggle;
 
 function init() {
@@ -30,17 +31,23 @@ function new() {
 
     if (FlxG.save.data.borderToggle == null)
         FlxG.save.data.borderToggle = "on";
+
+    if (FlxG.save.data.specialHitSounds == null)
+        FlxG.save.data.specialHitSounds = true;
 }
 
 function preStateSwitch() {
-    // Log current settings to the console
+    // Log current settings to the console if dev editing is enabled
+    if(FlxG.save.data.devmodeBox) {
     trace("------------");
     trace("Botplay: " + botplayValue);
     trace("Devmode: " + devmodeValue);
     trace("Force Fullscreen: " + forcefullscreenValue);
     trace("Borders: " + bordertoggleValue);
+    trace("Special Hit Sounds: " + specialHitSoundsValue);
     trace("Tinky Meme: " + tinkymemeValue);
     trace("------------");
+    }
 
     // Hide the framerate overlay during state transitions
     if (Framerate.instance != null) {

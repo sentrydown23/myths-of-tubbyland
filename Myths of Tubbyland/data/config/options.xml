@@ -1,14 +1,17 @@
 <menu name="Myths of Tubbyland" desc="Options specific to Myths of Tubbyland">
-    <checkbox id="botplayBox" name="Botplay" desc="Enabled/Disables Botplay. For showcases only."/>
-    <checkbox id="devmodeBox" name="Developer Editing" desc="Enables/Disables 7 in the main menu to be used to open the editor"/>
+    <menu name="General Options" desc="Options that can't be categorized anywhere else ">
+        <checkbox id="botplayBox" name="Botplay" desc="Enabled/Disables Botplay. For showcases only."/>
+        <checkbox id="devmodeBox" name="Developer Editing" desc="Enables/Disables 7 in the main menu to be used to open the editor"/>
+    </menu>
 
-    <menu name="Graphics Options" desc="Options pertaining to graphical elements, such as borders">
+    <menu name="Detail Options" desc="Options pertaining to graphical or audio details, such as borders or hit sounds">
         <choice id="borderToggle" name="Borders" desc="''DISABLED'' = Game plays at normal Aspect Ratio and has no special effects. Best if you want no distractions or if you don't like the effects. ''4:3'' = Forces the game into 4:3 Aspect Ratio. Best if you want the look without the extra effects. ''OVERLAY'' = Forces the game into 4:3 Aspect Ratio and adds a fancy border. Best if you want the full experience.">
         <value name="Disabled" value="off"/>
         <value name="Only 4:3" value="partial"/>
         <value name="Overlay" value="on"/>
         </choice>
         <checkbox id="forcefullscreen" name="Force Fullscreen" desc="Forces the game into Fullscreen after every transition. RECOMMENDED" />
+        <checkbox id="specialHitSounds" name="Special Hit Sounds" desc="Hit and Miss sounds for Special Notes, such as Custards or Saw's" />
     </menu>
 
     <menu name="Memes" desc="WARNING: these will make the mod lose a lot of aura">

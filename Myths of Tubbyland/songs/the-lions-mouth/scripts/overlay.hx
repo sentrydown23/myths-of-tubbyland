@@ -26,20 +26,34 @@ function create() {
     }
 }
 
-function beatHit(_) {
-    switch(_) {
+function beatHit(curBeat:Int) {
+    switch(curBeat) {
         case 16:
-            FlxTween.tween(introImage1, {alpha: 1}, 1.0);
+            if (introImage1 != null) {
+                // Instantly scale out from the customized center origin
+                introImage1.scale.set(1.0, 1.0);
+                FlxTween.tween(introImage1, {alpha: 1}, 1.0);
+                // Linear, additive zoom: Current Scale + 0.1
+                FlxTween.tween(introImage1.scale, {x: introImage1.scale.x + 0.1, y: introImage1.scale.y + 0.1}, 7.0, {ease: FlxEase.linear});
+            }
         case 30:
-            FlxTween.tween(introImage1, {alpha: 0}, 1.0);
+            if (introImage1 != null) FlxTween.tween(introImage1, {alpha: 0}, 1.0);
         case 32:
-            FlxTween.tween(introImage2, {alpha: 1}, 1.0);
+            if (introImage2 != null) {
+                introImage2.scale.set(1.0, 1.0);
+                FlxTween.tween(introImage2, {alpha: 1}, 1.0);
+                FlxTween.tween(introImage2.scale, {x: introImage2.scale.x + 0.1, y: introImage2.scale.y + 0.1}, 7.0, {ease: FlxEase.linear});
+            }
         case 46:
-            FlxTween.tween(introImage2, {alpha: 0}, 1.0);
+            if (introImage2 != null) FlxTween.tween(introImage2, {alpha: 0}, 1.0);
         case 48:
-            FlxTween.tween(introImage3, {alpha: 1}, 1.0);
+            if (introImage3 != null) {
+                introImage3.scale.set(1.0, 1.0);
+                FlxTween.tween(introImage3, {alpha: 1}, 1.0);
+                FlxTween.tween(introImage3.scale, {x: introImage3.scale.x + 0.1, y: introImage3.scale.y + 0.1}, 7.0, {ease: FlxEase.linear});
+            }
         case 62:
-            FlxTween.tween(introImage3, {alpha: 0}, 1.0);
+            if (introImage3 != null) FlxTween.tween(introImage3, {alpha: 0}, 1.0);
     }
 }
 
