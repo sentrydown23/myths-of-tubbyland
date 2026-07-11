@@ -1,5 +1,5 @@
 <!DOCTYPE codename-engine-character>
-<character x="-900" y="50" sprite="guardianbd" scale="2" flipX="true" camx="200" isPlayer="true" icon="guardian2">
+<character x="-900" y="50" sprite="guardianbd" scale="2" flipX="true" camx="200" camy="50" isPlayer="true">
 	<anim name="idle" anim="idle"/>
 	<anim name="singDOWN" anim="down"/>
 	<anim name="singRIGHT" anim="right"/>
