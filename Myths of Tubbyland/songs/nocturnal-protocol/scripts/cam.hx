@@ -74,86 +74,103 @@ function beatHit(_)
             fadeStrums(1, 0.5);
         case 48:
             camswingon();
-            FlxTween.tween(healthBar, {alpha: 1.0}, 2);
-            FlxTween.tween(newHealthBarBG, {alpha: 1.0}, 2);
-            FlxTween.tween(iconP1, {alpha: 1.0}, 2);
+            tweenTo(healthBar, {alpha: 1.0}, 2);
+            tweenTo(newHealthBarBG, {alpha: 1.0}, 2);
+            tweenTo(iconP1, {alpha: 1.0}, 2);
         case 78:
             fadeStrums(0, 0.5);
-            FlxTween.tween(healthBar, {alpha: 0}, 0.5);
-            FlxTween.tween(newHealthBarBG, {alpha: 0}, 0.5);
-            FlxTween.tween(iconP1, {alpha: 0}, 0.5);
+            tweenTo(healthBar, {alpha: 0}, 0.5);
+            tweenTo(newHealthBarBG, {alpha: 0}, 0.5);
+            tweenTo(iconP1, {alpha: 0}, 0.5);
         case 80:
             camswingoff();
         case 84:
-            FlxTween.tween(healthBar, {alpha: 1.0}, 2);
-            FlxTween.tween(newHealthBarBG, {alpha: 1.0}, 2);
-            FlxTween.tween(iconP1, {alpha: 1.0}, 2);
-            FlxTween.tween(iconP2, {alpha: 1.0}, 2);
-            FlxTween.tween(scoreTxt, {alpha: 1.0}, 2);
-            FlxTween.tween(missesTxt, {alpha: 1.0}, 2);
+            tweenTo(healthBar, {alpha: 1.0}, 2);
+            tweenTo(newHealthBarBG, {alpha: 1.0}, 2);
+            tweenTo(iconP1, {alpha: 1.0}, 2);
+            tweenTo(iconP2, {alpha: 1.0}, 2);
+            tweenTo(scoreTxt, {alpha: 1.0}, 2);
+            tweenTo(missesTxt, {alpha: 1.0}, 2);
             fadeStrums(1.0, 0.5);
         case 151:
-            FlxTween.tween(healthBar, {alpha: 0}, 1);
-            FlxTween.tween(newHealthBarBG, {alpha: 0}, 1);
-            FlxTween.tween(iconP1, {alpha: 0}, 1);
-            FlxTween.tween(iconP2, {alpha: 0}, 1);
-            FlxTween.tween(scoreTxt, {alpha: 0}, 1);
-            FlxTween.tween(missesTxt, {alpha: 0}, 1);
+            tweenTo(healthBar, {alpha: 0}, 1);
+            tweenTo(newHealthBarBG, {alpha: 0}, 1);
+            tweenTo(iconP1, {alpha: 0}, 1);
+            tweenTo(iconP2, {alpha: 0}, 1);
+            tweenTo(scoreTxt, {alpha: 0}, 1);
+            tweenTo(missesTxt, {alpha: 0}, 1);
         case 152: 
             fadeStrums(0, 0.01);
         case 166:
             fadeStrums(1.0, 0.5);
         case 184:
-            FlxTween.tween(healthBar, {alpha: 1.0}, 2);
-            FlxTween.tween(newHealthBarBG, {alpha: 1.0}, 2);
-            FlxTween.tween(iconP1, {alpha: 1.0}, 2);
-            FlxTween.tween(iconP2, {alpha: 1.0}, 2);
-            FlxTween.tween(scoreTxt, {alpha: 1.0}, 2);
-            FlxTween.tween(missesTxt, {alpha: 1.0}, 2);
+            tweenTo(healthBar, {alpha: 1.0}, 2);
+            tweenTo(newHealthBarBG, {alpha: 1.0}, 2);
+            tweenTo(iconP1, {alpha: 1.0}, 2);
+            tweenTo(iconP2, {alpha: 1.0}, 2);
+            tweenTo(scoreTxt, {alpha: 1.0}, 2);
+            tweenTo(missesTxt, {alpha: 1.0}, 2);
         case 213:
-            FlxTween.tween(healthBar, {alpha: 0}, 1);
-            FlxTween.tween(newHealthBarBG, {alpha: 0}, 1);
-            FlxTween.tween(iconP1, {alpha: 0}, 1);
-            FlxTween.tween(iconP2, {alpha: 0}, 1);
-            FlxTween.tween(scoreTxt, {alpha: 0}, 1);
-            FlxTween.tween(missesTxt, {alpha: 0}, 1);
+            tweenTo(healthBar, {alpha: 0}, 1);
+            tweenTo(newHealthBarBG, {alpha: 0}, 1);
+            tweenTo(iconP1, {alpha: 0}, 1);
+            tweenTo(iconP2, {alpha: 0}, 1);
+            tweenTo(scoreTxt, {alpha: 0}, 1);
+            tweenTo(missesTxt, {alpha: 0}, 1);
         case 216:
             charswingon();
             fadeStrums(0, 0.01);
-        if (FlxG.save.data.tinkymeme == true) {
-                        video.visible = true;
-            // Load and play
-            if (video.load(Paths.video("tinkybustingafuckingmove"))) {
-                new FlxTimer().start(0.001, (_) -> {
-                    video.play();
-                    video.volume = 0;
-                });
+            if (FlxG.save.data.tinkymeme == true && video != null) {
+                video.visible = true;
+                if (video.load(Paths.video("tinkybustingafuckingmove"))) {
+                    new FlxTimer().start(0.001, (_) -> {
+                        video.play();
+                        video.volume = 0;
+                    });
+                }
             }
-        }
         case 224:
             fadeStrums(1.0, 0.01);
+            healthBar.alpha = 1;
+            newHealthBarBG.alpha = 1;
+            iconP2.alpha = 1;
+            iconP1.alpha = 1;
         case 232:
             fadeStrums(0, 0.01);
+            healthBar.alpha = 0;
+            newHealthBarBG.alpha = 0;
+            iconP2.alpha = 0;
+            iconP1.alpha = 0;
         case 238:
             fadeStrums(1.0, 1);
+            healthBar.alpha = 1;
+            newHealthBarBG.alpha = 1;
+            iconP2.alpha = 1;
+            iconP1.alpha = 1;
+        case 246:
+            tweenTo(iconP2, {alpha: 0}, 2);
         case 248:
             charswingoff();
             camswingon();
-        if (FlxG.save.data.tinkymeme == true) {
-            video.visible = false;
-            video.stop();
-        }
+            if (FlxG.save.data.tinkymeme == true && video != null) {
+                video.visible = false;
+                video.stop();
+            }
         case 278:
             fadeStrums(0, 0.5);
         case 280:
             camswingoff();
+            healthBar.alpha = 0;
+            newHealthBarBG.alpha = 0;
+            iconP2.alpha = 0;
+            iconP1.alpha = 0;
         case 294:
             fadeStrums(1.0, 1);
         case 312:
             fadeStrums(0, 0.01);
     }
-if (swingEnabled) {
-        // INCREASED to 18 to give it more distance to travel
+    
+    if (swingEnabled) {
         targetAngle = (targetAngle == 18) ? -18 : 18;
         currentAngle = targetAngle;
     }
@@ -191,6 +208,7 @@ function lockCamera() {
 
 function fadeStrums(targetAlpha:Float, duration:Float) {
     playerStrums.forEach(function(strum) {
+        FlxTween.globalManager.completeTweensOf(strum);
         FlxTween.tween(strum, {alpha: targetAlpha}, duration);
     });
 }
@@ -211,4 +229,13 @@ if (swingEnabled) {
         currentAngle *= 0.95; 
         camGame.angle = currentAngle;
     }
+}
+
+function tweenTo(object:Dynamic, values:Dynamic, duration:Float) {
+    if (object != null) {
+        // Automatically wipes out any active tweens on this object engine-wide
+        FlxTween.globalManager.cancelTweensOf(object);
+        return FlxTween.tween(object, values, duration);
+    }
+    return null;
 }

@@ -20,3 +20,9 @@ function postCreate()
         trace("Botplay is disabled!");
     }
 }
+
+function onPlayerHit(e)
+{
+    if (e.noteType == "sawnote")
+        e.note.splash = "spark";
+}

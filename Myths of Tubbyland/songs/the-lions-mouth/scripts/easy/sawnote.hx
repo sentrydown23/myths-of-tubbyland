@@ -12,6 +12,7 @@ function onPlayerHit(e)
         if(FlxG.save.data.specialHitSounds == true)
         FlxG.sound.play(Paths.sound("sawhit"), soundVolume);
 
+
         var potentialHealth = health - damageAmount; // potentialHealth is current players health - damageAmount
 
         // Calculate if potentialHealth is greater than or equal to minimumDamage, then run code if it is

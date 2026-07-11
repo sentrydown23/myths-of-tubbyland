@@ -2,6 +2,7 @@
     <menu name="General Options" desc="Options that can't be categorized anywhere else ">
         <checkbox id="botplayBox" name="Botplay" desc="Enabled/Disables Botplay. For showcases only."/>
         <checkbox id="devmodeBox" name="Developer Editing" desc="Enables/Disables 7 in the main menu to be used to open the editor"/>
+        <checkbox id="notedrain" name="Note Drain" desc="Enables/Disables Health from draining when the opponent hits a note"/>
     </menu>
 
     <menu name="Detail Options" desc="Options pertaining to graphical or audio details, such as borders or hit sounds">

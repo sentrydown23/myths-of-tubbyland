@@ -8,6 +8,7 @@ var devmodeValue:Bool = FlxG.save.data.devmodeBox;
 var tinkymemeValue:Bool = FlxG.save.data.tinkymeme;
 var forcefullscreenValue:Bool = FlxG.save.data.forcefullscreen;
 var specialHitSoundsValue:Bool = FlxG.save.data.specialHitSounds;
+var notedrainValue:Bool = FlxG.save.data.notedrain;
 var bordertoggleValue:String = FlxG.save.data.borderToggle;
 
 function init() {
@@ -34,6 +35,9 @@ function new() {
 
     if (FlxG.save.data.specialHitSounds == null)
         FlxG.save.data.specialHitSounds = true;
+
+    if (FlxG.save.data.notedrain == null)
+        FlxG.save.data.notedrain = true;
 }
 
 function preStateSwitch() {
@@ -46,6 +50,7 @@ function preStateSwitch() {
     trace("Borders: " + bordertoggleValue);
     trace("Special Hit Sounds: " + specialHitSoundsValue);
     trace("Tinky Meme: " + tinkymemeValue);
+    trace("Note Drain: " + notedrainValue);
     trace("------------");
     }
 

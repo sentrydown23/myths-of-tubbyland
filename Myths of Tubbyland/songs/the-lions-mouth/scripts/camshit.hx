@@ -36,11 +36,11 @@ function beatHit(_)
     switch(_)
     {
         case 63: 
-            FlxTween.tween(camGame, {alpha: 1}, 0.5);
-            FlxTween.tween(camHUD, {alpha: 1}, 0.5);
+            tweenTo(camGame, {alpha: 1}, 0.5);
+            tweenTo(camHUD, {alpha: 1}, 0.5);
 
         case 128:
-            FlxTween.tween(camHUD, {alpha: 0}, 1.0);
+            tweenTo(camHUD, {alpha: 0}, 1.0);
 
         case 135:
             healthBar.alpha = 1;
@@ -50,8 +50,7 @@ function beatHit(_)
             iconP2.alpha = 1;
         
         case 136:
-            FlxTween.cancelTweensOf(camHUD);
-            FlxTween.tween(camHUD, {alpha: 1}, 0.2);
+            tweenTo(camHUD, {alpha: 1}, 0.2);
 
         case 264:
             camswingon();
@@ -85,28 +84,28 @@ function beatHit(_)
             camHUD.alpha = 1;
 
         case 528:
-            FlxTween.tween(iconP2, {alpha: 0}, 1.0);
+            tweenTo(iconP2, {alpha: 0}, 1.0);
 
         case 532:
-            FlxTween.tween(camGame, {alpha: 0}, 1);
-            FlxTween.tween(iconP1, {alpha: 0}, 1.0);
+            tweenTo(camGame, {alpha: 0}, 1);
+            tweenTo(iconP1, {alpha: 0}, 1.0);
 
         case 536:
-            FlxTween.tween(healthBar, {alpha: 0}, 1.0);
-            FlxTween.tween(newHealthBarBG, {alpha: 0}, 1.0);
-            FlxTween.tween(scoreTxt, {alpha: 0}, 1.0);
+            tweenTo(healthBar, {alpha: 0}, 1.0);
+            tweenTo(newHealthBarBG, {alpha: 0}, 1.0);
+            tweenTo(scoreTxt, {alpha: 0}, 1.0);
 
         case 552: 
             camswingoff();
 
         case 564:
-            FlxTween.tween(camHUD, {alpha: 0}, 1.0);
+            tweenTo(camHUD, {alpha: 0}, 1.0);
 
         case 567:
-            FlxTween.tween(camGame, {alpha: 1}, 1);
+            tweenTo(camGame, {alpha: 1}, 1);
 
         case 580:
-            FlxTween.tween(camGame, {alpha: 0}, 1);
+            tweenTo(camGame, {alpha: 0}, 1);
     }
 }
 
@@ -163,4 +162,12 @@ function update(elapsed:Float) {
         swingTime += elapsed * swingSpeed;
         camGame.angle = Math.sin(swingTime) * swingAmount;
     }
+}
+
+function tweenTo(object:Dynamic, values:Dynamic, duration:Float) {
+    if (object != null) {
+        FlxTween.globalManager.cancelTweensOf(object);
+        return FlxTween.tween(object, values, duration);
+    }
+    return null;
 }

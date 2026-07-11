@@ -11,6 +11,7 @@ var deathImg:FlxSprite;
 var deathMusic:FlxSound;
 var titleText:FlxText;
 var infoText:FlxText;
+var hintText:FlxText; // Added hint text object
 var canRestart:Bool = false;
 var fontName:String = "LD Slender Regular.ttf";
 
@@ -37,11 +38,18 @@ function create(event) {
     add(titleText);
 
     // Set up the death info text
-    infoText = new FlxText(0, FlxG.height * 0.5, FlxG.width, "COLLECT ALL THE CUSTARDS", 48);
+    infoText = new FlxText(0, FlxG.height * 0.45, FlxG.width, "COLLECT ALL THE CUSTARDS", 48);
     infoText.setFormat(Paths.font(fontName), 48, 0xFFFF46A2, "center");
     infoText.scrollFactor.set(0, 0);
     infoText.alpha = 0;
     add(infoText);
+
+    // Set up the hint text below the info text
+    hintText = new FlxText(0, FlxG.height - 50, FlxG.width, "Every collected Custard will reduce your chances of death by 10%!", 24);
+    hintText.setFormat(Paths.font(fontName), 24, 0xFFCCCCCC, "center");
+    hintText.scrollFactor.set(0, 0);
+    hintText.alpha = 0;
+    add(hintText);
 
     // Handle sequence after initial death sound completion
     deathSound.onComplete = function() {
@@ -49,6 +57,7 @@ function create(event) {
         FlxTween.tween(deathImg, {alpha: 1}, 1.5);
         FlxTween.tween(titleText, {alpha: 1}, 1.5);
         FlxTween.tween(infoText, {alpha: 1}, 1.5);
+        FlxTween.tween(hintText, {alpha: 1}, 1.5);
 
         deathMusic = FlxG.sound.play(Paths.music("gameover/death"), 0);
         deathMusic.fadeIn(1.5, 0, 1);
@@ -60,6 +69,10 @@ function create(event) {
     };
 }
 
+function startBreaking() { // Maintained existing naming structure
+    startBreathing();
+}
+
 function startBreathing() {
     // Apply pulsing effect to UI elements
     var tweenOptions = {type: FlxTween.PINGPONG, ease: FlxEase.sineInOut};
@@ -67,6 +80,7 @@ function startBreathing() {
     FlxTween.tween(deathImg, {alpha: 0.7}, 2.0, tweenOptions);
     FlxTween.tween(titleText, {alpha: 0.7}, 2.0, tweenOptions);
     FlxTween.tween(infoText, {alpha: 0.7}, 2.0, tweenOptions);
+    FlxTween.tween(hintText, {alpha: 0.7}, 2.0, tweenOptions);
 }
 
 function update(elapsed:Float) {
@@ -78,10 +92,12 @@ function update(elapsed:Float) {
         FlxTween.cancelTweensOf(deathImg);
         FlxTween.cancelTweensOf(titleText);
         FlxTween.cancelTweensOf(infoText);
+        FlxTween.cancelTweensOf(hintText);
 
         FlxTween.tween(deathImg, {alpha: 0}, 0.5);
         FlxTween.tween(titleText, {alpha: 0}, 0.5);
         FlxTween.tween(infoText, {alpha: 0}, 0.5);
+        FlxTween.tween(hintText, {alpha: 0}, 0.5);
 
         deathMusic.fadeOut(0.5, 0, function(t) {
             FlxG.switchState(new PlayState());
@@ -95,10 +111,12 @@ function update(elapsed:Float) {
         FlxTween.cancelTweensOf(deathImg);
         FlxTween.cancelTweensOf(titleText);
         FlxTween.cancelTweensOf(infoText);
+        FlxTween.cancelTweensOf(hintText);
 
         FlxTween.tween(deathImg, {alpha: 0}, 0.5);
         FlxTween.tween(titleText, {alpha: 0}, 0.5);
         FlxTween.tween(infoText, {alpha: 0}, 0.5);
+        FlxTween.tween(hintText, {alpha: 0}, 0.5);
 
         deathMusic.fadeOut(0.5, 0, function(t) {
             FlxG.switchState(new ModState("VinylFreeplayState"));

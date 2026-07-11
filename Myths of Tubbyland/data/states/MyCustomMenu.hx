@@ -14,7 +14,7 @@ import funkin.backend.MusicBeatTransition;
 var letterGroups:Array<FlxTypedGroup<FlxText>> = [];
 var hitBoxes:Array<FlxSprite> = [];
 var titleGroup:FlxTypedGroup<FlxText> = new FlxTypedGroup<FlxText>();
-var menuItems:Array<String> = ["Select Chapter", "Options", "Credits", "Exit"];
+var menuItems:Array<String> = ["Select Chapter", "Options", "Credits", "Extras", "Exit"];
 var curSelected:Int = 0; // Added selection tracker
 var flickerTimer:Float = 0;
 var titleFlickerTimer:Float = 0;
@@ -73,6 +73,11 @@ function create() {
         }
     }
     new FlxTimer().start(2.0, function(tmr) { canFlicker = true; });
+}
+
+function postCreate()
+{
+    new FlxTimer().start(0.2, function(tmr) { MusicBeatTransition.script = null; }); 
 }
 
 function update(elapsed:Float) {
@@ -163,11 +168,11 @@ function flickerLetter(l:FlxText, count:Int) {
 }
 
 function handleSelection(name:String) {
-    MusicBeatTransition.script = null;
     switch (name) {
         case "Select Chapter": FlxG.switchState(new ModState("VinylFreeplayState"));
         case "Options": FlxG.switchState(new OptionsMenu());
         case "Credits": FlxG.switchState(new ModState("CreditsState"));
+        case "Extras": FlxG.switchState(new ModState("Extra"));
         case "Exit": performExitSequence();
     }
 }
