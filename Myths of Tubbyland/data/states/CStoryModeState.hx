@@ -21,7 +21,7 @@ var OPTIONS_FONT_SIZE:Int = 48;
 var HINT_FONT_SIZE:Int = 20; // Size for the upcoming song text
 
 var VIDEO_PATH:String = "story/tv"; 
-var VIDEO_SCALE:Float = 0.15;       
+var VIDEO_SCALE:Float = 0.15;      
 
 var VIDEO_AUDIO_BOOST:String = "100.0"; 
 
@@ -210,17 +210,8 @@ function update(elapsed:Float) {
                     if (!isCutsceneStarted) {
                         isCutsceneStarted = true;
                         
-                        // Hard bypass: Force the internal graphic size to match Flixel's exact boundaries
+                        // Scale the video perfectly back to Flixel's native display dimensions
                         cutsceneVideoSprite.setGraphicSize(FlxG.width, FlxG.height);
-                        
-                        // Apply an aggressive scale modifier manually if hxvlc is over-rendering
-                        if (cutsceneVideoSprite.scale.x > 1.0 || cutsceneVideoSprite.scale.y > 1.0) {
-                            cutsceneVideoSprite.scale.set(1.0, 1.0);
-                        } else {
-                            // FIXED: Removed the 0.85 vertical squish factor so it stretches fully on the Y axis
-                            cutsceneVideoSprite.scale.set(FlxG.width / cutsceneVideoSprite.width, FlxG.height / cutsceneVideoSprite.height);
-                        }
-                        
                         cutsceneVideoSprite.updateHitbox();
                         cutsceneVideoSprite.screenCenter();
                     }
@@ -368,6 +359,10 @@ function selectOption() {
 }
 
 function playCutsceneThenSwitch(cutscenePath:String, destinationState:String) {
+    // Instantly snap the camera back to center coordinates and lock it.
+    // This stops the camera matrix translation mid-frame before the video can sample positions.
+    resetCamera();
+
     // 1. Immediately clean up and stop the background menu audio/video assets
     if (ambientAudio != null) {
         ambientAudio.stop();
