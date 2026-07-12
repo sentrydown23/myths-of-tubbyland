@@ -2,7 +2,11 @@ import funkin.backend.system.framerate.Framerate;
 import flixel.FlxG;
 import funkin.backend.scripting.Script;
 
+static var isCStoryMode:Bool = false;
+static var isNewGame:Bool = false;
+
 // Load user settings from save data
+var storymodeValue:Bool = isCStoryMode;
 var botplayValue:Bool = FlxG.save.data.botplayBox;
 var devmodeValue:Bool = FlxG.save.data.devmodeBox;
 var tinkymemeValue:Bool = FlxG.save.data.tinkymeme;
@@ -38,12 +42,20 @@ function new() {
 
     if (FlxG.save.data.notedrain == null)
         FlxG.save.data.notedrain = true;
+
+    // ======== STORY MODE SAVE DATA ==============
+    if (FlxG.save.data.npComplete == null)
+        FlxG.save.data.npComplete = false;
+
+    if (FlxG.save.data.tlmComplete == null)
+        FlxG.save.data.tlmComplete = false;
 }
 
 function preStateSwitch() {
     // Log current settings to the console if dev editing is enabled
     if(FlxG.save.data.devmodeBox) {
     trace("------------");
+    trace("Save Data is: " + "Nocturnal Protocol: " + FlxG.save.data.npComplete + ", " + "The Lions Mouth: " + FlxG.save.data.tlmComplete);
     trace("Botplay: " + botplayValue);
     trace("Devmode: " + devmodeValue);
     trace("Force Fullscreen: " + forcefullscreenValue);
@@ -51,6 +63,7 @@ function preStateSwitch() {
     trace("Special Hit Sounds: " + specialHitSoundsValue);
     trace("Tinky Meme: " + tinkymemeValue);
     trace("Note Drain: " + notedrainValue);
+    trace("Player is in Story Mode: " + isCStoryMode);
     trace("------------");
     }
 
@@ -63,4 +76,25 @@ function preStateSwitch() {
     if (FlxG.save.data.forcefullscreen == true) {
         FlxG.fullscreen = true;
     }
+
+        
+}
+
+function update()
+{
+    // ======== NEW GAME RESET ==============
+    if (isNewGame)
+    {
+        newGame();
+        trace("WE ARE NEW GAME");
+    }
+}
+
+function newGame() 
+{
+    trace("WE ARE NEW GAME HAS BEEN MOON");
+    isNewGame = false;
+    FlxG.save.data.npComplete = false;
+    FlxG.save.data.tlmComplete = false;
+    FlxG.save.flush();
 }

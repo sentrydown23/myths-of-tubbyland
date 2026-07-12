@@ -36,10 +36,13 @@ var menuShade:FlxSprite;
 function create() {
     FlxG.mouse.visible = true;
     
-    if (FlxG.sound.music.volume < 0.7) {
-        FlxG.sound.music.fadeIn(1.0, FlxG.sound.music.volume, 0.7);
-    } else if (FlxG.sound.music.volume > 0.7) {
-        FlxG.sound.music.fadeOut(1.0, 0.7);
+    // Check if music object exists before running volume operations
+    if (FlxG.sound.music != null) {
+        if (FlxG.sound.music.volume < 0.7) {
+            FlxG.sound.music.fadeIn(1.0, FlxG.sound.music.volume, 0.7);
+        } else if (FlxG.sound.music.volume > 0.7) {
+            FlxG.sound.music.fadeOut(1.0, 0.7);
+        }
     }
     
     // Initialize panorama setup group
@@ -130,14 +133,17 @@ function update(elapsed:Float) {
     }
 
     // Dynamic drifting math running uniformly on every background asset
-    bgTimer += elapsed;
+bgTimer += elapsed;
     var calcX = -40 + (Math.sin(bgTimer * 0.45) * 22);
     var calcY = -40 + (Math.cos(bgTimer * 0.35) * 24);
     
-    panoramaGroup.forEach(function(bg:FlxSprite) {
-        bg.x = calcX;
-        bg.y = calcY;
-    });
+    // Added explicit safety null check wrapper
+    if (panoramaGroup != null) {
+        panoramaGroup.forEach(function(bg:FlxSprite) {
+            bg.x = calcX;
+            bg.y = calcY;
+        });
+    }
 
     // Handle background interval cross-fades
     if (panoramaImages.length > 1) {
@@ -250,9 +256,9 @@ function jitterLetter(l:FlxText, count:Int, groupIndex:Int) {
 
 function handleSelection(name:String) {
     switch (name) {
-        case "Story Mode": FlxG.switchState(new ModState("ComingSoon"));
+        case "Story Mode": FlxG.switchState(new ModState("CStoryModeState"));
         case "Select Chapter": FlxG.switchState(new ModState("VinylFreeplayState"));
-        case "Options": FlxG.switchState(new OptionsMenu());
+        case "Options": FlxG.switchState(new OptionsMenu()); // separately hooked from import - Vanilla game menu, so no ModState
         case "Credits": FlxG.switchState(new ModState("CreditsState"));
         case "Extras": FlxG.switchState(new ModState("Extra"));
         case "Exit": performExitSequence();

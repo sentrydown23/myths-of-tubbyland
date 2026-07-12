@@ -247,7 +247,14 @@ function exitToFreeplayState()
     FlxTween.tween(npText, {alpha: 0}, 0.3, {
         onComplete: function(_) {
             FlxG.sound.music.stop();
+            if (isCStoryMode)
+            {
+                FlxG.switchState(new ModState("CStoryModeState"));
+            }
+            else if (!isCStoryMode)
+            {
             FlxG.switchState(new ModState("VinylFreeplayState"));
+            }
         }
     });
 }

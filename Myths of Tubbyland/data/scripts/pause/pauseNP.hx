@@ -103,7 +103,15 @@ function selectOption() {
         case "Resume": close();
         case "Restart": FlxG.switchState(new PlayState());
         case "Options": FlxG.switchState(new OptionsMenu());
-        case "Exit": FlxG.switchState(new ModState("VinylFreeplayState"));
+        case "Exit": 
+        if (isCStoryMode)
+        {
+            FlxG.switchState(new ModState("CStoryModeState"));
+        }
+        else if (!isCStoryMode)
+        {
+            FlxG.switchState(new ModState("VinylFreeplayState"));
+        }    
     }
 }
 
