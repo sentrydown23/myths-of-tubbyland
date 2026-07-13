@@ -1,4 +1,5 @@
 <menu name="Myths of Tubbyland" desc="Options specific to Myths of Tubbyland">
+    <checkbox id="epilepsy" name="EPILEPSY" desc="Enables/Disables flashing effects that may trigger epileptic individuals"/>
     <menu name="General Options" desc="Options that can't be categorized anywhere else ">
         <checkbox id="botplayBox" name="Botplay" desc="Enabled/Disables Botplay. For showcases only."/>
         <checkbox id="devmodeBox" name="Developer Editing" desc="Enables/Disables 7 in the main menu to be used to open the editor"/>

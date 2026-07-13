@@ -18,7 +18,7 @@ var CONTINUE_X:Float = 980;
 var BUTTONS_Y:Float = 470;
 
 var OPTIONS_FONT_SIZE:Int = 48;
-var HINT_FONT_SIZE:Int = 20; // Size for the upcoming song text
+var HINT_FONT_SIZE:Int = 20;
 
 var VIDEO_PATH:String = "story/tv"; 
 var VIDEO_SCALE:Float = 0.15;      
@@ -39,15 +39,15 @@ var SWAY_SPEED:Float = 1.5;
 var SWAY_X_REACH:Float = 15;        
 var SWAY_Y_REACH:Float = 10;        
 
-// Mandatory intro video path for starting a New Game
 var NEW_GAME_CUTSCENE:String = "story/newgame";
 
 // =====================================================================
-// STORY PROGRESSION PIPELINE (Add new songs here in chronological order)
+// STORY PROGRESSION PIPELINE
 // =====================================================================
 var storyPipeline:Array<{saveKey:String, targetState:String, displayName:String, cutscene:String}> = [
     {saveKey: "npComplete",  targetState: "PreludeNPState", displayName: "Nocturnal Protocol", cutscene: ""}, 
-    {saveKey: "tlmComplete", targetState: "PreludeTLMState", displayName: "The Lions Mouth", cutscene: ""} // End game fallback
+    {saveKey: "tlmComplete", targetState: "PreludeTLMState", displayName: "The Lions Mouth", cutscene: "tlm"},
+    {saveKey: "tbc", targetState: "placeholders/To Be Continued", displayName: "???", cutscene: ""}
 ];
 // =====================================================================
 
@@ -58,7 +58,7 @@ var videoHitbox:FlxSprite;
 
 var options:Array<String> = ["NEW GAME", "CONTINUE"];
 var textObjects:Array<FlxText> = [];
-var hintText:FlxText; // Text object for the song preview hint
+var hintText:FlxText; 
 var curSelected:Int = 0;
 var ambientAudio:FlxSound;
 
@@ -68,22 +68,14 @@ var hasSave:Bool = false;
 var isClean:Bool = false;
 isCStoryMode = false;
 
-// Fullscreen video layer management for narrative cutscenes
-var cutsceneVideoSprite:FlxVideoSprite;
-var isPlayingCutscene:Bool = false;
-var isCutsceneStarted:Bool = false;
-var cutsceneTargetState:String = ""; // Track next destination safely
-
 function create() {
-    // Determine the save state routing before building the menu items
+    if (FlxG.save.data.epilepsy == true)
+        NEW_GAME_CUTSCENE = "story/newgamenoflash";
     var pipelineData = getContinueDestination();
 
-    if (FlxG.save.data.npComplete == true)
-    {
+    if (FlxG.save.data.npComplete == true) {
         hasSave = true;
-    }
-    else
-    {
+    } else {
         hasSave = false;
     }   
 
@@ -113,18 +105,12 @@ function create() {
     videoSprite.antialiasing = true;
 
     var nativePath:String = Paths.video(VIDEO_PATH);
-    
-    var vlcOptions:Array<String> = [
-        'input-repeat=99999', 
-        'gain=' + VIDEO_AUDIO_BOOST
-    ];
+    var vlcOptions:Array<String> = ['input-repeat=99999', 'gain=' + VIDEO_AUDIO_BOOST];
 
     if (videoSprite.load(nativePath, vlcOptions)) {
         videoSprite.play();
-        
         videoSprite.scale.set(VIDEO_SCALE, VIDEO_SCALE);
         videoSprite.updateHitbox();
-        
         videoSprite.y = VIDEO_Y;
         if (AUTO_CENTER_X) {
             videoSprite.x = (FlxG.width - videoSprite.width) / 2;
@@ -161,11 +147,10 @@ function create() {
         menuText.scrollFactor.set(1, 1);
         
         if (options[i] == "CONTINUE") {
-            // Dynamically scale text appearance depending on save history
             if (pipelineData.targetState == "") {
-                menuText.color = 0xFF444444; // Grayed out if all are false
+                menuText.color = 0xFF444444; 
             } else {
-                menuText.color = 0xFFFFFFFF; // Fully visible if a save state exists
+                menuText.color = 0xFFFFFFFF; 
             }
             menuText.text = "CONTINUE";
         }
@@ -174,7 +159,6 @@ function create() {
         textObjects.push(menuText);
     }
 
-    // Create Hint Text directly under the CONTINUE button position
     hintText = new FlxText(CONTINUE_X, BUTTONS_Y + OPTIONS_FONT_SIZE + 10, 500, "");
     hintText.setFormat(Paths.font("LD Slender Regular.ttf"), HINT_FONT_SIZE, 0xFFFFFFFF, "left");
     hintText.scrollFactor.set(1, 1);
@@ -186,48 +170,15 @@ function create() {
     } else {
         hintText.text = "NEXT: " + pipelineData.displayName.toUpperCase();
         hintText.color = 0xFFFFFFFF;
-        hintText.alpha = 0.3; // Matches idle unselected state alpha
+        hintText.alpha = 0.3; 
     }
     add(hintText);
-
-    // Initialize full-screen cutscene container over everything
-    cutsceneVideoSprite = new FlxVideoSprite(0, 0);
-    cutsceneVideoSprite.scrollFactor.set(0, 0); 
-    cutsceneVideoSprite.visible = false;
-    add(cutsceneVideoSprite);
 
     changeSelection(0, false); 
 }
 
 function update(elapsed:Float) {
-    // Check if the cutscene is running and has finished playing
-    if (isPlayingCutscene) {
-        if (cutsceneVideoSprite != null) {
-            // ONLY check bitmap parameters if the engine has fully finished instantiating it
-            if (cutsceneVideoSprite.bitmap != null) {
-                if (cutsceneVideoSprite.bitmap.isPlaying) {
-                    // Fix scaling the exact frame the video kicks off
-                    if (!isCutsceneStarted) {
-                        isCutsceneStarted = true;
-                        
-                        // Scale the video perfectly back to Flixel's native display dimensions
-                        cutsceneVideoSprite.setGraphicSize(FlxG.width, FlxG.height);
-                        cutsceneVideoSprite.updateHitbox();
-                        cutsceneVideoSprite.screenCenter();
-                    }
-                }
-                
-                // If it officially kicked off and has now finished, move on
-                if (isCutsceneStarted && !cutsceneVideoSprite.bitmap.isPlaying && cutsceneTargetState != "") {
-                    executeStateSwitch(cutsceneTargetState);
-                }
-            }
-        }
-        return; // Halt regular menu updates while cutscene plays
-    }
-
     camTimer += elapsed * SWAY_SPEED;
-    
     FlxG.camera.scroll.x = Math.sin(camTimer) * SWAY_X_REACH;
     FlxG.camera.scroll.y = Math.cos(camTimer * 0.7) * SWAY_Y_REACH;
 
@@ -241,7 +192,6 @@ function update(elapsed:Float) {
                 if (curSelected != i) {
                     changeSelection(i - curSelected, true);
                 }
-                
                 if (FlxG.mouse.justPressed) {
                     selectOption();
                 }
@@ -249,20 +199,10 @@ function update(elapsed:Float) {
         }
     }
 
-    if (FlxG.keys.justPressed.LEFT || FlxG.keys.justPressed.A) {
-        changeSelection(-1, true);
-    }
-    if (FlxG.keys.justPressed.RIGHT || FlxG.keys.justPressed.D) {
-        changeSelection(1, true);
-    }
-
-    if (FlxG.keys.justPressed.ESCAPE || FlxG.keys.justPressed.BACKSPACE || FlxG.mouse.justPressedRight) {
-        quitMenu();
-    }
-
-    if (FlxG.keys.justPressed.ENTER || FlxG.keys.justPressed.SPACE) {
-        selectOption();
-    }
+    if (FlxG.keys.justPressed.LEFT || FlxG.keys.justPressed.A) changeSelection(-1, true);
+    if (FlxG.keys.justPressed.RIGHT || FlxG.keys.justPressed.D) changeSelection(1, true);
+    if (FlxG.keys.justPressed.ESCAPE || FlxG.keys.justPressed.BACKSPACE || FlxG.mouse.justPressedRight) quitMenu();
+    if (FlxG.keys.justPressed.ENTER || FlxG.keys.justPressed.SPACE) selectOption();
 }
 
 function toggleVideoState() {
@@ -287,9 +227,7 @@ function changeSelection(change:Int, playSound:Bool) {
     if (curSelected < 0) curSelected = options.length - 1;
     if (curSelected >= options.length) curSelected = 0;
 
-    if (playSound) {
-        FlxG.sound.play(Paths.sound("scrollMenu"));
-    }
+    if (playSound) FlxG.sound.play(Paths.sound("scrollMenu"));
 
     var pipelineData = getContinueDestination();
 
@@ -335,7 +273,7 @@ function selectOption() {
         isCStoryMode = true;
         
         if (NEW_GAME_CUTSCENE != null && NEW_GAME_CUTSCENE != "") {
-            playCutsceneThenSwitch(NEW_GAME_CUTSCENE, "PreludeNPState");
+            switchWithCutscene(NEW_GAME_CUTSCENE, "PreludeNPState");
         } else {
             executeStateSwitch("PreludeNPState");
         }
@@ -350,7 +288,7 @@ function selectOption() {
             isCStoryMode = true; 
             
             if (pipelineData.cutscene != null && pipelineData.cutscene != "") {
-                playCutsceneThenSwitch(pipelineData.cutscene, pipelineData.targetState);
+                switchWithCutscene(pipelineData.cutscene, pipelineData.targetState);
             } else {
                 executeStateSwitch(pipelineData.targetState);
             }
@@ -358,63 +296,21 @@ function selectOption() {
     }
 }
 
-function playCutsceneThenSwitch(cutscenePath:String, destinationState:String) {
-    // Instantly snap the camera back to center coordinates and lock it.
-    // This stops the camera matrix translation mid-frame before the video can sample positions.
+function switchWithCutscene(cutscenePath:String, destinationState:String) {
     resetCamera();
+    cleanUpAssets();
 
-    // 1. Immediately clean up and stop the background menu audio/video assets
-    if (ambientAudio != null) {
-        ambientAudio.stop();
-    }
-    if (videoSprite != null) {
-        videoSprite.stop();
-        videoSprite.destroy();
-        videoSprite = null; 
-    }
-    if (videoHitbox != null) {
-        videoHitbox.destroy();
-    }
+    // Pass parameters safely into storage fields for the upcoming state to pick up
+    FlxG.save.data.activeCutscenePath = cutscenePath;
+    FlxG.save.data.activeCutsceneTarget = destinationState;
 
-    // 2. Hide all remaining menu elements so nothing can flicker when the video ends
-    if (bgSprite != null) bgSprite.visible = false;
-    if (titleText != null) titleText.visible = false;
-    if (hintText != null) hintText.visible = false;
-    
-    for (i in 0...textObjects.length) {
-        if (textObjects[i] != null) {
-            textObjects[i].visible = false;
-        }
-    }
-
-    // 3. Arm the cutscene state tracker
-    isPlayingCutscene = true;
-    isCutsceneStarted = false;
-    cutsceneTargetState = destinationState;
-    FlxG.mouse.visible = false;
-
-    // 4. Load and play the fullscreen cutscene
-    var fullPath:String = Paths.video(cutscenePath);
-    if (cutsceneVideoSprite.load(fullPath)) {
-        cutsceneVideoSprite.visible = true;
-        cutsceneVideoSprite.play();
-    } else {
-        // Fallback if video file is missing
-        executeStateSwitch(destinationState);
-    }
+    MusicBeatTransition.script = 'data/scripts/blackout';
+    FlxG.switchState(new ModState("StoryCutsceneState")); 
 }
 
 function executeStateSwitch(stateTarget:String) {
-    cutsceneTargetState = ""; 
-    isCutsceneStarted = false;
-    
-    // Clean up the cutscene player specifically
-    if (cutsceneVideoSprite != null) {
-        cutsceneVideoSprite.stop();
-        cutsceneVideoSprite.destroy();
-    }
-    
     resetCamera();
+    cleanUpAssets();
     MusicBeatTransition.script = 'data/scripts/blackout';
     FlxG.switchState(new ModState(stateTarget));
 }
@@ -423,6 +319,7 @@ function quitMenu() {
     resetCamera();
     cleanUpAssets();
     FlxG.sound.play(Paths.sound("cancelMenu"));
+    if (FlxG.sound.music != null)
     FlxG.sound.music.volume = 0.7;
     FlxG.switchState(new ModState("MyCustomMenu"));
 }
@@ -433,20 +330,12 @@ function resetCamera() {
 
 function cleanUpAssets() {
     isClean = true;
-    if (ambientAudio != null) {
-        ambientAudio.stop();
-    }
+    if (ambientAudio != null) ambientAudio.stop();
     if (videoSprite != null) {
         videoSprite.stop();
         videoSprite.destroy();
     }
-    if (videoHitbox != null) {
-        videoHitbox.destroy();
-    }
-    if (cutsceneVideoSprite != null) {
-        cutsceneVideoSprite.stop();
-        cutsceneVideoSprite.destroy();
-    }
+    if (videoHitbox != null) videoHitbox.destroy();
 }
 
 function destroy() {
@@ -454,16 +343,9 @@ function destroy() {
     cleanUpAssets();
 }
 
-// =====================================================================
-// PIPELINE EVALUATION LOOPS
-// =====================================================================
 function getContinueDestination():{targetState:String, displayName:String, cutscene:String} {
     if (Reflect.field(FlxG.save.data, storyPipeline[0].saveKey) != true) {
-        return {
-            targetState: "", 
-            displayName: "LOCKED",
-            cutscene: ""
-        };
+        return { targetState: "", displayName: "LOCKED", cutscene: "" };
     }
 
     for (i in 0...storyPipeline.length - 1) {

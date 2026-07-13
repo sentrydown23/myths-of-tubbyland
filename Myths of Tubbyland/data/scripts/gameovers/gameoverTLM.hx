@@ -101,7 +101,14 @@ function update(elapsed:Float) {
         FlxTween.tween(infoText, {alpha: 0}, 0.5);
 
         deathMusic.fadeOut(0.5, 0, function(t) {
-            FlxG.switchState(new ModState("VinylFreeplayState"));
+            if (isCStoryMode)
+            {
+              FlxG.switchState(new ModState("CStoryModeState"));  
+            }
+            else if (!isCStoryMode)
+            {
+                FlxG.switchState(new ModState("VinylFreeplayState"));
+            }  
         });
     }
 }

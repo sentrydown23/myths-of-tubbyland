@@ -44,6 +44,10 @@ function create() {
             FlxG.sound.music.fadeOut(1.0, 0.7);
         }
     }
+    else if (FlxG.sound.music == null)
+    {
+        FlxG.sound.playMusic(Paths.music("mainmenu"), 0.7, true);
+    }
     
     // Initialize panorama setup group
     panoramaGroup = new FlxTypedGroup<FlxSprite>();
@@ -259,7 +263,7 @@ function handleSelection(name:String) {
         case "Story Mode": FlxG.switchState(new ModState("CStoryModeState"));
         case "Select Chapter": FlxG.switchState(new ModState("VinylFreeplayState"));
         case "Options": FlxG.switchState(new OptionsMenu()); // separately hooked from import - Vanilla game menu, so no ModState
-        case "Credits": FlxG.switchState(new ModState("CreditsState"));
+        case "Credits": FlxG.switchState(new ModState("placeholders/ComingSoon"));
         case "Extras": FlxG.switchState(new ModState("Extra"));
         case "Exit": performExitSequence();
     }

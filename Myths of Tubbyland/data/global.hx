@@ -43,12 +43,18 @@ function new() {
     if (FlxG.save.data.notedrain == null)
         FlxG.save.data.notedrain = true;
 
+    if (FlxG.save.data.epilepsy == null)
+        FlxG.save.data.epilepsy = false;
+
     // ======== STORY MODE SAVE DATA ==============
     if (FlxG.save.data.npComplete == null)
         FlxG.save.data.npComplete = false;
 
     if (FlxG.save.data.tlmComplete == null)
         FlxG.save.data.tlmComplete = false;
+
+    if (FlxG.save.data.tbc == null)
+        FlxG.save.data.tbc = true;
 }
 
 function preStateSwitch() {
