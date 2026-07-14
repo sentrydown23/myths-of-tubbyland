@@ -10,6 +10,7 @@ import funkin.editors.EditorPicker;
 import openfl.system.System;
 import funkin.options.OptionsMenu;
 import funkin.backend.MusicBeatTransition;
+import funkin.backend.utils.DiscordUtil;
 
 var letterGroups:Array<FlxTypedGroup<FlxText>> = [];
 var hitBoxes:Array<FlxSprite> = [];
@@ -36,6 +37,8 @@ var menuShade:FlxSprite;
 function create() {
     FlxG.mouse.visible = true;
     
+    UpdatePresence();
+
     // Check if music object exists before running volume operations
     if (FlxG.sound.music != null) {
         if (FlxG.sound.music.volume < 0.7) {
@@ -279,4 +282,24 @@ function performExitSequence() {
     titleGroup.forEach(function(l) { FlxTween.tween(l, {alpha: 0}, 0.5); });
     panoramaGroup.forEach(function(bg:FlxSprite) { FlxTween.tween(bg, {alpha: 0}, 0.5); });
     new FlxTimer().start(0.6, function(tmr) { System.exit(0); });
+}
+
+function UpdatePresence()
+{
+    if (FlxG.save.data.devmodeBox)
+    {
+        DiscordUtil.changePresenceAdvanced({
+            details: "In the Main Menu",
+            state: "Development Mode",
+            largeImageKey: "coverart",       
+        });
+    }
+    else 
+    {
+        DiscordUtil.changePresenceAdvanced({
+            details: "In the Main Menu",
+            state: "",
+            largeImageKey: "coverart",       
+        });
+    }
 }

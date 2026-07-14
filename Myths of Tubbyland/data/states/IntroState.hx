@@ -10,6 +10,7 @@ import openfl.system.System;
 import sys.io.File;
 import Sys;
 import flixel.input.keyboard.FlxKey;
+import funkin.backend.utils.DiscordUtil;
 
 var letterGroup:FlxTypedGroup<FlxText>;
 var canSkip:Bool = true;
@@ -47,6 +48,11 @@ function create() {
 
     new FlxTimer().start(6.0, function(tmr) {
         finishIntro();
+    });
+
+
+    DiscordUtil.changePresenceAdvanced({
+        largeImageKey: "coverart",       
     });
 }
 

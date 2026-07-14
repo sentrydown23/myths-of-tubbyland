@@ -7,10 +7,17 @@ import flixel.tweens.FlxEase;
 import flixel.text.FlxText;
 import flixel.util.FlxTimer;
 import flixel.system.FlxSound;
+import funkin.backend.utils.DiscordUtil;
+
+// Discord Presence details
+var menuDetail:String = "Selecting a Song";
+var menuState:String = "Freeplay";
+var menuStateDEV:String = "Freeplay (DEV)";
+var last = DiscordUtil.lastPresence;
 
 var songs:Array<Dynamic> = [
-    {displayName: "Nocturnal Protocol", folderName: "nocturnal-protocol", preludeState: "PreludeNPState"},
-    {displayName: "The Lions Mouth", folderName: "the-lions-mouth", preludeState: "PreludeTLMState"},
+    {displayName: "Nocturnal Protocol", folderName: "nocturnal-protocol", preludeState: "PreludeNPState", presence: "coverart-1f"},
+    {displayName: "The Lions Mouth", folderName: "the-lions-mouth", preludeState: "PreludeTLMState", presence: "coverart-2f"}
 ];
 
 var curSelected:Int = 0;
@@ -55,6 +62,7 @@ function create()
     add(songText);
 
     changeSelection(0);
+    UpdatePresence();
 }
 
 function update(elapsed:Float)
@@ -120,6 +128,9 @@ function simulateCoverClick()
     
     FlxTween.tween(discNorm, {x: targetDiscX, angle: 360}, 1.5, {ease: FlxEase.elasticOut});
     new FlxTimer().start(1.5, function(_) { canInteract = true; diskOut = true; });
+
+    // Update the presence to use the song's custom presence art if it exists
+    UpdatePresence(songs[curSelected].presence);
 }
 
 function simulateDiscClick()
@@ -160,6 +171,9 @@ function tuckDisc() {
     FlxTween.tween(discNorm, {x: tuckedDiscX, angle: 0}, 0.6, {ease: FlxEase.cubeOut});
 
     new FlxTimer().start(0.6, function(_) { canInteract = true; });
+
+    // Reset the presence back to the menu default image key
+    UpdatePresence();
 }
 
 function changeSelection(change:Int)
@@ -186,4 +200,27 @@ function changeSelection(change:Int)
     discNorm.angle = 0;
 
     songText.text = songs[curSelected].displayName;
+}
+
+function UpdatePresence(?customImage:String)
+{
+    // If no customImage is provided (or it's blank), use the default key
+    var img:String = (customImage != null && customImage != "") ? customImage : "coverart-f";
+
+    if (FlxG.save.data.devmodeBox)
+    {
+        DiscordUtil.changePresenceAdvanced({
+            details: menuDetail,
+            state: menuStateDEV,
+            largeImageKey: img
+        });
+    }
+    else 
+    {
+        DiscordUtil.changePresenceAdvanced({
+            details: menuDetail,
+            state: menuState,
+            largeImageKey: img
+        });
+    }
 }

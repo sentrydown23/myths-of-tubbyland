@@ -8,6 +8,7 @@ import flixel.text.FlxText;
 import flixel.text.FlxTextBorderStyle;
 import openfl.utils.Assets;
 import flixel.util.FlxTimer;
+import funkin.backend.utils.DiscordUtil;
 
 // State configuration variables
 var targetSongFolder:String = "nocturnal-protocol"; 
@@ -83,6 +84,11 @@ function create()
     add(diffHintText);
 
     loadPreludePage(0);
+}
+
+function postCreate()
+{
+    UpdatePresence();
 }
 
 function skipAnimations() {
@@ -256,4 +262,24 @@ function exitToFreeplayState()
             }
         }
     });
+}
+
+function UpdatePresence()
+{
+    if (FlxG.save.data.devmodeBox)
+    {
+        DiscordUtil.changePresenceAdvanced({
+            details: "Nocturnal Protocol",
+            state: "Prelude (DEV)",
+            largeImageKey: "coverart-1",       
+        });
+    }
+    else 
+    {
+        DiscordUtil.changePresenceAdvanced({
+            details: "Nocturnal Protocol",
+            state: "Prelude",
+            largeImageKey: "coverart-1",       
+        });
+    }
 }

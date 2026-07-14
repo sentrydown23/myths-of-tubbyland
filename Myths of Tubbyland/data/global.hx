@@ -1,6 +1,7 @@
 import funkin.backend.system.framerate.Framerate;
 import flixel.FlxG;
 import funkin.backend.scripting.Script;
+import funkin.backend.utils.DiscordUtil;
 
 static var isCStoryMode:Bool = false;
 static var isNewGame:Bool = false;
@@ -81,6 +82,9 @@ function preStateSwitch() {
     // Apply fullscreen setting
     if (FlxG.save.data.forcefullscreen == true) {
         FlxG.fullscreen = true;
+
+    if (DiscordUtil.config.logoKey != "coverart")
+        DiscordUtil.config.logoKey = "coverart";
     }
 
         

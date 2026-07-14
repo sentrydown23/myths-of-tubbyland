@@ -6,6 +6,7 @@ import flixel.util.FlxTimer;
 import flixel.system.FlxSound;
 import flixel.text.FlxText;
 import funkin.game.PlayState;
+import funkin.backend.utils.DiscordUtil;
 
 var deathImg:FlxSprite;
 var deathMusic:FlxSound;
@@ -17,6 +18,7 @@ var fontName:String = "LD Slender Regular.ttf";
 
 function create(event) {
     event.cancel();
+    UpdatePresence();
 
     // Play the death sound effect
     var deathSound:FlxSound = FlxG.sound.play(Paths.sound("gameover/deathNP"));
@@ -127,6 +129,26 @@ function update(elapsed:Float) {
             {
                 FlxG.switchState(new ModState("VinylFreeplayState"));
             }  
+        });
+    }
+}
+
+function UpdatePresence()
+{
+    if (FlxG.save.data.devmodeBox)
+    {
+        DiscordUtil.changePresenceAdvanced({
+            details: "Nocturnal Protocol",
+            state: "Dead",
+            largeImageKey: "coverart-1d",       
+        });
+    }
+    else 
+    {
+        DiscordUtil.changePresenceAdvanced({
+            details: "Nocturnal Protocol",
+            state: "Dead",
+            largeImageKey: "coverart-1d",       
         });
     }
 }

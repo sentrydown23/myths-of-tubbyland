@@ -6,6 +6,7 @@ import flixel.sound.FlxSound;
 import funkin.backend.scripting.ModState;
 import funkin.backend.MusicBeatTransition;
 import hxvlc.flixel.FlxVideoSprite;
+import funkin.backend.utils.DiscordUtil;
 
 // =====================================================================
 // CONFIGURATION CONSTANTS
@@ -69,6 +70,7 @@ var isClean:Bool = false;
 isCStoryMode = false;
 
 function create() {
+    UpdatePresence();
     if (FlxG.save.data.epilepsy == true)
         NEW_GAME_CUTSCENE = "story/newgamenoflash";
     var pipelineData = getContinueDestination();
@@ -367,4 +369,24 @@ function getContinueDestination():{targetState:String, displayName:String, cutsc
         displayName: storyPipeline[lastIndex].displayName,
         cutscene: (storyPipeline[lastIndex].cutscene != null) ? storyPipeline[lastIndex].cutscene : ""
     };
+}
+
+function UpdatePresence()
+{
+    if (FlxG.save.data.devmodeBox)
+    {
+        DiscordUtil.changePresenceAdvanced({
+            details: "In Campaign",
+            state: "Development Mode",
+            largeImageKey: "coverart",       
+        });
+    }
+    else 
+    {
+        DiscordUtil.changePresenceAdvanced({
+            details: "In Campaign",
+            state: "",
+            largeImageKey: "coverart",       
+        });
+    }
 }

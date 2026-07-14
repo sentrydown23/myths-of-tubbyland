@@ -1,5 +1,6 @@
 import funkin.options.OptionsMenu;
 import funkin.backend.scripting.ModState;
+import funkin.backend.utils.DiscordUtil;
 
 var letterGroups:Array<FlxTypedGroup<FlxText>> = [];
 var options:Array<String> = ["Resume", "Restart", "Options", "Exit"];
@@ -8,6 +9,7 @@ var bg:FlxSprite;
 var pauseCam:FlxCamera;
 var flickerTimer:Float = 0;
 var disc:FlxSprite;
+var isPausedClash = false;
 
 function create(event) {
     event.cancel();
@@ -100,7 +102,8 @@ function update(elapsed) {
 
 function selectOption() {
     switch(options[curSelected]) {
-        case "Resume": close();
+        case "Resume": 
+            close();
         case "Restart": FlxG.switchState(new PlayState());
         case "Options": FlxG.switchState(new OptionsMenu());
         case "Exit": 

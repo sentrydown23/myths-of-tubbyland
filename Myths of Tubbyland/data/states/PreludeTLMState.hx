@@ -8,6 +8,7 @@ import flixel.text.FlxText;
 import flixel.text.FlxTextBorderStyle;
 import openfl.utils.Assets;
 import flixel.util.FlxTimer;
+import funkin.backend.utils.DiscordUtil;
 
 // State configuration variables
 var targetSongFolder:String = "the-lions-mouth"; 
@@ -40,6 +41,7 @@ var diffHintText:FlxText;
 
 function create()
 {
+    UpdatePresence();
     FlxG.mouse.visible = true;
     if (FlxG.sound.music == null || !FlxG.sound.music.playing)
         FlxG.sound.playMusic(Paths.music("ambience"));
@@ -257,4 +259,24 @@ function exitToFreeplayState()
             }
         }
     });
+}
+
+function UpdatePresence()
+{
+    if (FlxG.save.data.devmodeBox)
+    {
+        DiscordUtil.changePresenceAdvanced({
+            details: "The Lions Mouth",
+            state: "Prelude (DEV)",
+            largeImageKey: "coverart-2",       
+        });
+    }
+    else 
+    {
+        DiscordUtil.changePresenceAdvanced({
+            details: "The Lions Mouth",
+            state: "Prelude",
+            largeImageKey: "coverart-2",       
+        });
+    }
 }
