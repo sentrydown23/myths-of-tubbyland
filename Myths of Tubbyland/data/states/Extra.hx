@@ -6,6 +6,7 @@ import flixel.tweens.FlxTween;
 import flixel.tweens.FlxEase;
 import flixel.math.FlxMath;
 import flixel.system.FlxSound;
+import funkin.backend.utils.DiscordUtil;
 
 var bg:FlxSprite;
 var sidebarBg:FlxSprite; 
@@ -34,6 +35,7 @@ var menuLoop:FlxSound;
 var bgTimer:Float = 0;
 
 function create() {
+    UpdatePresence();
     if (FlxG.sound.music != null) FlxG.sound.music.volume = 0;
 
     menuLoop = new FlxSound();
@@ -320,4 +322,24 @@ function clearSubMenu() {
     FlxTween.tween(displayImage, {alpha: 0, x: FlxG.width + 40}, 0.25, {ease: FlxEase.sineIn});
     FlxTween.tween(displayDesc, {alpha: 0, x: FlxG.width + 40}, 0.25, {ease: FlxEase.sineIn});
     FlxG.sound.play(Paths.sound("extras/extraback"), 0.35);
+}
+
+function UpdatePresence()
+{
+    if (FlxG.save.data.devmodeBox)
+    {
+        DiscordUtil.changePresenceAdvanced({
+            details: "In Extras",
+            state: "Development Mode",
+            largeImageKey: "coverart",       
+        });
+    }
+    else 
+    {
+        DiscordUtil.changePresenceAdvanced({
+            details: "In Extras",
+            state: "",
+            largeImageKey: "coverart",       
+        });
+    }
 }

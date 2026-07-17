@@ -1,4 +1,14 @@
 import funkin.game.PlayState;
+import funkin.backend.shaders.CustomShader; 
+import openfl.filters.ShaderFilter;
+
+var glitchShader:CustomShader;
+var cameraFilter:ShaderFilter;
+var shaderActive:Bool = false;
+var shaderTime:Float = 0;
+
+// Dynamic controller variable we can tween
+var shaderStrength:Float = 1.0; 
 
 var border:FlxSprite;
 var barLeft:FlxSprite;
@@ -6,13 +16,21 @@ var barRight:FlxSprite;
 var barTop:FlxSprite;
 var barBottom:FlxSprite;
 
-// Create a separate camera for the border and bars
 var borderCam:FlxCamera;
 var introImage1:FlxSprite;
 var introImage2:FlxSprite;
 var introImage3:FlxSprite;
 
 function create() {
+    glitchShader = new CustomShader("vhs"); 
+    glitchShader.iTime = 0.0;
+    
+    // Set our starting strength to 1 (Fully glitched)
+    var multParam = Reflect.field(glitchShader.data, "glitchMultiplier");
+    if (multParam != null) {
+        Reflect.setProperty(multParam, "value", [shaderStrength]);
+    }
+
     switch (FlxG.save.data.borderToggle) {
         case "on":
             borderON();
@@ -21,19 +39,20 @@ function create() {
         case "off":
             borderOFF();
         default:
-            // Fallback if the setting is null or invalid
             borderOFF();
     }
 }
 
 function beatHit(curBeat:Int) {
     switch(curBeat) {
+        case 15:
+            // Instantly make the shader active with 100% strength
+            shaderStrength = 1.0;
+            applyShaderToBorderCam();
         case 16:
             if (introImage1 != null) {
-                // Instantly scale out from the customized center origin
                 introImage1.scale.set(1.0, 1.0);
                 FlxTween.tween(introImage1, {alpha: 1}, 1.0);
-                // Linear, additive zoom: Current Scale + 0.1
                 FlxTween.tween(introImage1.scale, {x: introImage1.scale.x + 0.1, y: introImage1.scale.y + 0.1}, 7.0, {ease: FlxEase.linear});
             }
         case 30:
@@ -53,9 +72,49 @@ function beatHit(curBeat:Int) {
                 FlxTween.tween(introImage3.scale, {x: introImage3.scale.x + 0.1, y: introImage3.scale.y + 0.1}, 7.0, {ease: FlxEase.linear});
             }
         case 62:
-            if (introImage3 != null) FlxTween.tween(introImage3, {alpha: 0}, 1.0);
+            // --- SYNCED FADE OUT ---
+            // We fade BOTH the image's alpha and the shader's strength together over 1.0 second.
+            FlxTween.num(1.0, 0.0, 1.0, {
+                ease: FlxEase.linear,
+                onUpdate: function(tween:FlxTween) {
+                    shaderStrength = tween.value; // Fades the shader strength
+                    if (introImage3 != null) {
+                        introImage3.alpha = tween.value; // Fades the image alpha at the exact same rate
+                    }
+                }
+            });
+        case 64:
+            // I would love to fade them out naturally but the game
+            removeShaderFromBorderCam();
+            FlxTween.globalManager.cancelTweensOf(introImage1);
+            FlxTween.globalManager.cancelTweensOf(introImage2);
+            FlxTween.globalManager.cancelTweensOf(introImage3);
+            introImage1.visible = false;
+            introImage2.visible = false;
+            introImage3.visible = false;
     }
 }
+
+function update(elapsed:Float)
+{
+    if (glitchShader != null)
+    {
+        shaderTime += elapsed;
+        
+        // 1. Update Time
+        var timeParam = Reflect.field(glitchShader.data, "iTime");
+        if (timeParam != null) {
+            Reflect.setProperty(timeParam, "value", [shaderTime]);
+        }
+
+        // 2. Feed the active tween value into our new glitchMultiplier uniform
+        var multParam = Reflect.field(glitchShader.data, "glitchMultiplier");
+        if (multParam != null) {
+            Reflect.setProperty(multParam, "value", [shaderStrength]);
+        }
+    }
+}
+
 
 function borderOFF() {
     borderCam = new FlxCamera(0, 0, FlxG.width, FlxG.height);
@@ -228,4 +287,24 @@ function borderPartial() {
     barRight.scrollFactor.set(0, 0);
     barRight.cameras = [borderCam]; // Assign to the new camera
     add(barRight);
+}
+
+function applyShaderToBorderCam() {
+    if (glitchShader == null || borderCam == null) return;
+
+    // Create the filter wrapper for the camera
+    cameraFilter = new ShaderFilter(glitchShader);
+    
+    // Assign the filter to the camera's filters array
+    borderCam.filters = [cameraFilter];
+    
+    shaderActive = true;
+}
+
+function removeShaderFromBorderCam() {
+    borderCam.filters.remove(cameraFilter);
+        if (borderCam.filters.length == 0) {
+            borderCam.filters = null;
+        }
+    shaderActive = false;
 }

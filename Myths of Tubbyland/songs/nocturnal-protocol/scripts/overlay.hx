@@ -1,5 +1,6 @@
 import funkin.game.PlayState;
 
+
 var border:FlxSprite;
 var barLeft:FlxSprite;
 var barRight:FlxSprite;

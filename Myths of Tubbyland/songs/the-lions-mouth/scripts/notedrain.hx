@@ -5,7 +5,7 @@ var gainAmount:Float = 0;
 var minimumHealth:Float = 0.1;
 var maximumHealth:Float = 2;
 
-if(FlxG.save.data.notedrain)
+if(FlxG.save.data.notedrain && !FlxG.save.data.botplayBox)
 {
 function onNoteHit(event) {
     if (!event.player && health > minimumHealth && event.noteType != "sawnote")

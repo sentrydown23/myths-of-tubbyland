@@ -98,8 +98,53 @@ function beatHit(_)
         case 552: 
             camswingoff();
 
-        case 564:
-            tweenTo(camHUD, {alpha: 0}, 1.0);
+case 557: // UP NOTE (Index 2) - Natural vertical curve and smooth plunge
+    var strum = playerStrums.members[2];
+    var startY = strum.y;
+    // Smooth, gradual transparency fade that finishes exactly with the movement
+    FlxTween.tween(strum, {alpha: 0}, 0.8, {ease: FlxEase.sineOut});
+    
+    FlxTween.num(0, 1, 0.8, {ease: FlxEase.circIn}, function(v:Float) {
+        // v creates an incredibly smooth parabolic arc (pops up 40px, then drops)
+        strum.y = startY - (40 * Math.sin(v * Math.PI / 2)) + (900 * v * v);
+        strum.angle = v * 35;
+    });
+
+case 558: // RIGHT NOTE (Index 3) - Smooth outward diagonal arc
+    var strum = playerStrums.members[3];
+    var startX = strum.x;
+    var startY = strum.y;
+    FlxTween.tween(strum, {alpha: 0}, 0.8, {ease: FlxEase.sineOut});
+    
+    FlxTween.num(0, 1, 0.8, {ease: FlxEase.circIn}, function(v:Float) {
+        // Continuous outward movement blended smoothly with an accelerating downward drop
+        strum.x = startX + (140 * FlxEase.quadOut(v)); 
+        strum.y = startY + (900 * v * v);
+        strum.angle = v * 40;
+    });
+
+case 560: // LEFT NOTE (Index 0) - Smooth outward diagonal arc
+    var strum = playerStrums.members[0];
+    var startX = strum.x;
+    var startY = strum.y;
+    FlxTween.tween(strum, {alpha: 0}, 0.8, {ease: FlxEase.sineOut});
+    
+    FlxTween.num(0, 1, 0.8, {ease: FlxEase.circIn}, function(v:Float) {
+        strum.x = startX - (140 * FlxEase.quadOut(v)); 
+        strum.y = startY + (900 * v * v);
+        strum.angle = v * -40;
+    });
+
+case 564: // DOWN NOTE (Index 1) - Natural vertical curve and smooth plunge
+    tweenTo(camHUD, {alpha: 0}, 1.0);
+    var strum = playerStrums.members[1];
+    var startY = strum.y;
+    FlxTween.tween(strum, {alpha: 0}, 0.8, {ease: FlxEase.sineOut});
+    
+    FlxTween.num(0, 1, 0.8, {ease: FlxEase.circIn}, function(v:Float) {
+        strum.y = startY - (40 * Math.sin(v * Math.PI / 2)) + (900 * v * v);
+        strum.angle = v * -35;
+    });
 
         case 567:
             tweenTo(camGame, {alpha: 1}, 1);

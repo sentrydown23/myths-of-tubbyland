@@ -47,6 +47,12 @@ function new() {
     if (FlxG.save.data.epilepsy == null)
         FlxG.save.data.epilepsy = false;
 
+    if (FlxG.save.data.devmodeSaveTrace == null)
+        FlxG.save.data.devmodeSaveTrace = false;
+
+    if (FlxG.save.data.shaderToggle == null)
+        FlxG.save.data.shaderToggle = true;
+
     // ======== STORY MODE SAVE DATA ==============
     if (FlxG.save.data.npComplete == null)
         FlxG.save.data.npComplete = false;
@@ -60,7 +66,7 @@ function new() {
 
 function preStateSwitch() {
     // Log current settings to the console if dev editing is enabled
-    if(FlxG.save.data.devmodeBox) {
+    if(FlxG.save.data.devmodeBox && FlxG.save.data.devmodeSaveTrace) {
     trace("------------");
     trace("Save Data is: " + "Nocturnal Protocol: " + FlxG.save.data.npComplete + ", " + "The Lions Mouth: " + FlxG.save.data.tlmComplete);
     trace("Botplay: " + botplayValue);

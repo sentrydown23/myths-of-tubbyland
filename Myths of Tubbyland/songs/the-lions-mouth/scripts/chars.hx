@@ -31,8 +31,6 @@ function postCreate()
     walkChar = strumLines.members[1].characters[0];
     walkCharOrigY = walkChar.y;   // remember its initial position
 
-    //player.cpu = true;
-
     startSong();
 }
 

@@ -47,7 +47,7 @@ var NEW_GAME_CUTSCENE:String = "story/newgame";
 // =====================================================================
 var storyPipeline:Array<{saveKey:String, targetState:String, displayName:String, cutscene:String}> = [
     {saveKey: "npComplete",  targetState: "PreludeNPState", displayName: "Nocturnal Protocol", cutscene: ""}, 
-    {saveKey: "tlmComplete", targetState: "PreludeTLMState", displayName: "The Lions Mouth", cutscene: "tlm"},
+    {saveKey: "tlmComplete", targetState: "PreludeTLMState", displayName: "The Lions Mouth", cutscene: "story/tlm"},
     {saveKey: "tbc", targetState: "placeholders/To Be Continued", displayName: "???", cutscene: ""}
 ];
 // =====================================================================

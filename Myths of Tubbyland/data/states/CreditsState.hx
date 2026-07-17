@@ -1,181 +1,198 @@
-import flixel.group.FlxGroup.FlxTypedGroup;
+import flixel.FlxSprite;
 import flixel.text.FlxText;
-import flixel.text.FlxTextBorderStyle;
+import flixel.group.FlxTypedGroup;
 import flixel.util.FlxColor;
 import flixel.tweens.FlxTween;
-import flixel.tweens.FlxEase;
+import openfl.utils.Assets;
 
-var creditsData:Array<Dynamic> = [
-    {
-        name: "Scrally", 
-        desc: "Did all of the coding, and ported Niro's Nocturnal Protocol to Codename Engine", 
-        url: "https://www.youtube.com/@scrally-lull"
-    },
-    {
-        name: "AstroDev", 
-        desc: "Made all the sprites for The Lions Mouth", 
-        url: "https://www.youtube.com/@astronomicaldeveloper"
-    },
-    {
-        name: "Niro", 
-        desc: "Made all sprites and icons for Nocturnal Protocol", 
-        url: "https://www.youtube.com/@nirogammamon"
-    },
-    {
-        name: "Redus", 
-        desc: "Made the icons, ending screen, and disc for The Lions Mouth", 
-        url: "https://www.youtube.com/@redustheimpo"
-    },
-    {
-        name: "SancoTheFox", 
-        desc: "Composer of Nocturnal Protocol and The Lions Mouth", 
-        url: "https://www.youtube.com/@sancothefox2816"
-    }
+var creditsList:Array<Dynamic> = [
+    {category: "DEVELOPMENT", name: "Lead Developer", txt: "data/credits/lead.txt"},
+    {category: "DEVELOPMENT", name: "Helping Hand", txt: "data/credits/helper.txt"},
+    {category: "Assets", name: "Nocturnal Protocol", txt: "data/credits/npasset.txt"},
+    {category: "Assets", name: "The Lions Mouth", txt: "data/credits/tlmasset.txt"},
+    {category: "Music", name: "Musician", txt: "data/credits/music.txt"},
+    {category: "TESTERS", name: "Testers", txt: "data/credits/testers.txt"}
 ];
 
-var grpNames:FlxTypedGroup<FlxText>;
-var descText:FlxText;
-var titleText:FlxText;
-var hintText:FlxText;
+var menuItems:FlxTypedGroup;
+var categoryHeaders:FlxTypedGroup; 
+var titleBox:FlxText;
+var displayBox:FlxText;
+var bg:FlxSprite;
+var leftShade:FlxSprite; 
 
 var curSelected:Int = 0;
-var canInteract:Bool = false;
+var fontPath:String = Paths.font("LD Slender Regular");
+
+var targetY:Float = 0;
+var menuContainerY:Float = 0;
+var initialPositions:Array<Float> = []; 
+var headerPositions:Array<Float> = [];
+
+var typingTween:FlxTween;
+var titleTween:FlxTween;
+var targetText:String = "";
+var targetTitle:String = "";
 
 function create() {
-    // Show mouse cursor
     FlxG.mouse.visible = true;
+    FlxG.cameras.bgColor = 0xFF0A0A0C; 
 
-    // Title setup
-    titleText = new FlxText(0, 40, FlxG.width, "The Lions Mouth Credits", 64);
-    titleText.alignment = "center";
-    titleText.font = Paths.font("LD Slender Regular.ttf");
-    titleText.borderStyle = FlxTextBorderStyle.OUTLINE;
-    titleText.borderColor = 0xFF000000;
-    titleText.borderSize = 4;
-    titleText.color = 0xFFFFD700;
-    add(titleText);
+    leftShade = new FlxSprite(0, 0).makeGraphic(Std.int(FlxG.width * 0.40), FlxG.height, 0xFF141416);
+    leftShade.alpha = 0.85; 
+    add(leftShade);
 
-    // Names list setup
-    grpNames = new FlxTypedGroup();
-    add(grpNames);
+    categoryHeaders = new FlxTypedGroup();
+    add(categoryHeaders);
 
-    for (i in 0...creditsData.length) {
-        var nameTxt = new FlxText(0, 200 + (i * 80), FlxG.width, creditsData[i].name, 54);
-        nameTxt.alignment = "center";
-        nameTxt.font = Paths.font("LD Slender Regular.ttf");
-        nameTxt.borderStyle = FlxTextBorderStyle.OUTLINE;
-        nameTxt.borderColor = 0xFF000000;
-        nameTxt.borderSize = 4;
-        nameTxt.ID = i;
-        grpNames.add(nameTxt);
-    }
+    menuItems = new FlxTypedGroup();
+    add(menuItems);
 
-    // Description text
-    descText = new FlxText(50, FlxG.height - 120, FlxG.width - 100, "", 36);
-    descText.alignment = "center";
-    descText.font = Paths.font("LD Slender Regular.ttf");
-    descText.borderStyle = FlxTextBorderStyle.OUTLINE;
-    descText.borderColor = 0xFF000000;
-    descText.borderSize = 3;
-    add(descText);
+    var lastCategory:String = "";
+    var currentY:Float = 0; 
 
-    // Hint text
-    hintText = new FlxText(5, FlxG.height - 30, FlxG.width, "Click / ENTER to open YouTube | Right-Click / Click Hint / ESC to go back", 20);
-    hintText.alignment = "center";
-    hintText.font = Paths.font("LD Slender Regular.ttf");
-    add(hintText);
-
-    // Entrance animations
-    for (i in 0...grpNames.members.length) {
-        var item = grpNames.members[i];
-        item.x -= 800;
-        FlxTween.tween(item, {x: 0}, 1, {ease: FlxEase.expoOut, startDelay: i * 0.1});
-    }
-
-    FlxTween.tween(titleText, {y: titleText.y + 10}, 1, {
-        ease: FlxEase.expoOut, 
-        onComplete: function(_) {
-            canInteract = true;
-            changeSelection(0, true);
+    for (i in 0...creditsList.length) {
+        var itemData = creditsList[i];
+        
+        if (itemData.category != lastCategory) {
+            lastCategory = itemData.category;
+            var catHeader:FlxText = new FlxText(40, currentY, 0, itemData.category.toUpperCase());
+            catHeader.setFormat(fontPath, 16, 0xFF6C757D, "left"); 
+            catHeader.bold = true;
+            categoryHeaders.add(catHeader);
+            headerPositions.push(currentY);
+            currentY += 35;
         }
-    });
+
+        var menuItem:FlxText = new FlxText(55, currentY, 450, itemData.name);
+        menuItem.setFormat(fontPath, 26, FlxColor.WHITE, "left");
+        menuItem.ID = i;
+        menuItems.add(menuItem);
+        initialPositions.push(currentY);
+        
+        currentY += 55;
+    }
+
+    titleBox = new FlxText(FlxG.width * 0.45, 70, FlxG.width * 0.5, "");
+    titleBox.setFormat(fontPath, 44, FlxColor.WHITE, "left");
+    titleBox.bold = true;
+    add(titleBox);
+
+    displayBox = new FlxText(FlxG.width * 0.45, 155, FlxG.width * 0.5, "");
+    displayBox.setFormat(fontPath, 22, 0xFFE2E8F0, "left"); 
+    add(displayBox);
+
+    changeSelection(0);
+    menuContainerY = targetY; 
 }
 
 function update(elapsed:Float) {
-    if (!canInteract) return;
+    if (FlxG.keys.justPressed.UP || FlxG.keys.justPressed.W) changeSelection(-1);
+    if (FlxG.keys.justPressed.DOWN || FlxG.keys.justPressed.S) changeSelection(1);
 
-    // Mouse input
-    for (item in grpNames.members) {
-        if (FlxG.mouse.overlaps(item)) {
+    if (FlxG.mouse.wheel != 0) {
+        changeSelection(-FlxG.mouse.wheel);
+    }
+
+    for (item in menuItems.members) {
+        if (FlxG.mouse.overlaps(item) && FlxG.mouse.justPressed) {
             if (curSelected != item.ID) {
-                changeSelection(item.ID, true);
-            }
-            
-            if (FlxG.mouse.justPressed) {
-                FlxG.openURL(creditsData[curSelected].url);
+                curSelected = item.ID;
+                changeSelection(0);
             }
         }
     }
 
-    // Keyboard input
-    if (FlxG.keys.justPressed.UP || FlxG.keys.justPressed.W)
-        changeSelection(-1, false);
-    
-    if (FlxG.keys.justPressed.DOWN || FlxG.keys.justPressed.S)
-        changeSelection(1, false);
+    var lerpSpeed:Float = 10 * elapsed;
+    if (lerpSpeed > 1) lerpSpeed = 1;
+    menuContainerY = menuContainerY + (targetY - menuContainerY) * lerpSpeed;
 
-    if (FlxG.keys.justPressed.ENTER) {
-        FlxG.openURL(creditsData[curSelected].url);
+    for (i in 0...menuItems.members.length) {
+        menuItems.members[i].y = initialPositions[i] + menuContainerY;
+    }
+    for (i in 0...categoryHeaders.members.length) {
+        categoryHeaders.members[i].y = headerPositions[i] + menuContainerY;
     }
 
-    // Exit menu
-    if (FlxG.keys.justPressed.ESCAPE || FlxG.keys.justPressed.BACKSPACE || FlxG.mouse.justPressedRight || (FlxG.mouse.overlaps(hintText) && FlxG.mouse.justPressed)) {
-        exitMenu();
+    for (item in menuItems.members) {
+        if (item.ID == curSelected) {
+            item.color = 0xFFFF0000; 
+            item.alpha = 1.0;
+            item.scale.set(1.03, 1.03); 
+        } else {
+            item.color = FlxColor.WHITE;
+            item.alpha = 0.45; 
+            item.scale.set(1.0, 1.0);
+        }
+    }
+
+    if (FlxG.keys.justPressed.BACKSPACE || FlxG.keys.justPressed.ESCAPE) {
+        FlxG.sound.play(Paths.sound('cancelMenu'));
+        FlxG.mouse.visible = false;
+        FlxG.switchState(new ModState("MyCustomMenu"));
     }
 }
 
-function changeSelection(change:Int, absolute:Bool = false) {
-    FlxG.sound.play(Paths.sound('scrollMenu'));
+function changeSelection(change:Int = 0) {
+    if (change != 0) FlxG.sound.play(Paths.sound('scrollMenu'));
 
-    if (absolute)
-        curSelected = change;
-    else
-        curSelected += change;
+    curSelected += change;
 
-    // Wrap selection
-    if (curSelected < 0) curSelected = creditsData.length - 1;
-    if (curSelected >= creditsData.length) curSelected = 0;
+    if (curSelected < 0) curSelected = creditsList.length - 1;
+    if (curSelected >= creditsList.length) curSelected = 0;
 
-    // Update description with fade animation
-    descText.alpha = 0;
-    descText.text = creditsData[curSelected].desc;
-    descText.y = FlxG.height - 100;
-    FlxTween.tween(descText, {alpha: 1, y: FlxG.height - 120}, 0.3, {ease: FlxEase.cubeOut});
+    loadCreditsText(creditsList[curSelected].txt);
+    
+    targetY = (FlxG.height * 0.45) - initialPositions[curSelected];
+}
 
-    // Update UI items
-    for (item in grpNames.members) {
-        var isSelected = (item.ID == curSelected);
-        item.alpha = isSelected ? 1 : 0.5;
-        item.color = isSelected ? 0xFFFFFF00 : 0xFFFFFFFF;
+function loadCreditsText(filePath:String) {
+    if (typingTween != null) typingTween.cancel();
+    if (titleTween != null) titleTween.cancel();
+    
+    titleBox.text = "";
+    displayBox.text = "";
+    targetTitle = "";
+    targetText = "";
+    
+    if (Assets.exists(Paths.file(filePath))) {
+        var rawText:String = Assets.getText(Paths.file(filePath));
+        var cleanText:String = StringTools.replace(rawText, "\r\n", "\n");
         
-        FlxTween.cancelTweensOf(item.scale);
-        FlxTween.tween(item.scale, {x: isSelected ? 1.2 : 1.0, y: isSelected ? 1.2 : 1.0}, 0.2, {ease: isSelected ? FlxEase.backOut : FlxEase.cubeOut});
+        if (StringTools.contains(cleanText, "(") && StringTools.contains(cleanText, ")")) {
+            var openIdx:Int = cleanText.indexOf("(");
+            var closeIdx:Int = cleanText.indexOf(")");
+            
+            if (closeIdx > openIdx) {
+                targetTitle = cleanText.substring(openIdx + 1, closeIdx);
+                targetText = StringTools.trim(cleanText.substring(closeIdx + 1));
+            } else {
+                targetText = cleanText;
+            }
+        } else {
+            targetText = cleanText;
+        }
+    } else {
+        targetText = "Missing text file at:\n" + filePath;
     }
-}
 
-function exitMenu() {
-    canInteract = false;
-    FlxG.mouse.visible = false;
-    FlxG.sound.play(Paths.sound('cancelMenu'));
-    
-    for (item in grpNames.members) {
-        FlxTween.tween(item, {x: 800, alpha: 0}, 0.5, {ease: FlxEase.backIn});
+    if (targetTitle.length > 0) {
+        titleTween = FlxTween.num(0, targetTitle.length, targetTitle.length * 0.012, {
+            onUpdate: function(t:FlxTween) {
+                titleBox.text = targetTitle.substring(0, Std.int(t.value));
+            },
+            onComplete: function(_) {
+                titleBox.text = targetTitle;
+            }
+        });
     }
-    FlxTween.tween(descText, {alpha: 0}, 0.5);
-    FlxTween.tween(titleText, {y: -100, alpha: 0}, 0.5, {
-        ease: FlxEase.backIn, 
+
+    typingTween = FlxTween.num(0, targetText.length, targetText.length * 0.004, {
+        onUpdate: function(t:FlxTween) {
+            displayBox.text = targetText.substring(0, Std.int(t.value));
+        },
         onComplete: function(_) {
-            FlxG.switchState(new ModState("MyCustomMenu"));
+            displayBox.text = targetText;
         }
     });
 }

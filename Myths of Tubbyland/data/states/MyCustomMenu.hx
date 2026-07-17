@@ -266,7 +266,7 @@ function handleSelection(name:String) {
         case "Story Mode": FlxG.switchState(new ModState("CStoryModeState"));
         case "Select Chapter": FlxG.switchState(new ModState("VinylFreeplayState"));
         case "Options": FlxG.switchState(new OptionsMenu()); // separately hooked from import - Vanilla game menu, so no ModState
-        case "Credits": FlxG.switchState(new ModState("placeholders/ComingSoon"));
+        case "Credits": FlxG.switchState(new ModState("CreditsState"));
         case "Extras": FlxG.switchState(new ModState("Extra"));
         case "Exit": performExitSequence();
     }
